@@ -3,12 +3,6 @@
 
 <x-partials.head :title="$title ?? null" />
 
-{{--
-    Inset layout, after shadcn's SidebarInset: the whole page sits on a muted
-    ground, the sidebar is transparent, and the content is a rounded, bordered
-    panel floating inside it. Flux lays these out via grid areas, so the "inset"
-    is just a margin + surface on <flux:main>.
---}}
 <x-partials.body class="bg-zinc-100 dark:bg-zinc-900">
     <flux:sidebar
         sticky
@@ -79,7 +73,11 @@
 
         <flux:sidebar.nav>
             <flux:modal.trigger name="assistant">
-                <flux:sidebar.item icon="sparkles" icon:variant="solid" as="button">Assistente</flux:sidebar.item>
+                <flux:sidebar.item
+                    icon="sparkles"
+                    icon:variant="solid"
+                    as="button"
+                >Assistente</flux:sidebar.item>
             </flux:modal.trigger>
         </flux:sidebar.nav>
 
@@ -101,7 +99,11 @@
         />
         <flux:spacer />
         <flux:modal.trigger name="assistant">
-            <flux:button variant="subtle" icon="sparkles" aria-label="Abrir assistente" />
+            <flux:button
+                variant="subtle"
+                icon="sparkles"
+                aria-label="Abrir assistente"
+            />
         </flux:modal.trigger>
         <flux:dropdown
             position="top"
@@ -116,7 +118,7 @@
     </flux:header>
 
     <flux:main
-        class="m-2 rounded-xl border border-zinc-200 bg-white shadow-sm lg:my-3 lg:me-3 lg:ms-0 dark:border-zinc-700 dark:bg-zinc-800"
+        class="m-2 md:rounded-xl md:border md:border-zinc-200 md:bg-white md:shadow-sm lg:my-3 lg:me-3 lg:ms-0 md:dark:border-zinc-700 md:dark:bg-zinc-800"
     >
         <div class="mx-auto w-full max-w-5xl pb-24 lg:pb-0">
             {{ $slot }}
