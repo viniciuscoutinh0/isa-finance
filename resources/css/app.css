@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@import "../../vendor/livewire/flux/dist/flux.css";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans:
+        "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    /* Soft entrance for content streamed into the chat (tool-call status, etc.). */
+    --animate-chat-pop: chat-pop 0.2s ease-out;
+}
+
+@keyframes chat-pop {
+    from {
+        opacity: 0;
+        transform: translateY(0.25rem);
+    }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ | scroll-fade — a scroll-aware fade on the edges of a scroll container, after
+ | shadcn's utility of the same name. Pure CSS (scroll-driven animations, no JS):
+ | the top edge is crisp at rest and fades once you scroll away from it, the
+ | bottom edge fades at rest and sharpens when you reach the end. Applied with
+ | mask-image so it dissolves the content, adapting to any background. Browsers
+ | without scroll-driven animation support fall back to a static fade on both
+ | edges. Put it on the element that has `overflow-y-auto`.
+ */
+@property --sf-t {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sf-b {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@keyframes sf-fade-in-top {
+    from {
+        --sf-t: 0;
+    }
+    to {
+        --sf-t: 1;
+    }
+}
+
+@keyframes sf-fade-out-bottom {
+    from {
+        --sf-b: 1;
+    }
+    to {
+        --sf-b: 0;
+    }
+}
+
+@utility scroll-fade {
+    --scroll-fade-size: min(12%, 40px);
+    --scroll-fade-reveal: 96px;
+    --sf-t: 1;
+    --sf-b: 1;
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0) 0,
+        rgb(0 0 0 / 1) calc(var(--sf-t) * var(--scroll-fade-size)),
+        rgb(0 0 0 / 1) calc(100% - var(--sf-b) * var(--scroll-fade-size)),
+        rgb(0 0 0 / 0) 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0) 0,
+        rgb(0 0 0 / 1) calc(var(--sf-t) * var(--scroll-fade-size)),
+        rgb(0 0 0 / 1) calc(100% - var(--sf-b) * var(--scroll-fade-size)),
+        rgb(0 0 0 / 0) 100%
+    );
+
+    @supports (animation-timeline: scroll(self)) {
+        --sf-t: 0;
+        animation:
+            sf-fade-in-top linear both,
+            sf-fade-out-bottom linear both;
+        animation-timeline: scroll(self block), scroll(self block);
+        animation-range:
+            0 var(--scroll-fade-reveal),
+            calc(100% - var(--scroll-fade-reveal)) 100%;
+    }
+}
