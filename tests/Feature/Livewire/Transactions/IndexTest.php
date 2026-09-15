@@ -110,7 +110,7 @@ it('goes back to the first page when a filter changes', function (): void {
         ->assertSet('paginators.page', 1);
 });
 
-it('refreshes the list when a transaction is created elsewhere', function (): void {
+it('refreshes the list when a sibling component writes a transaction', function (): void {
     $component = Livewire::test(Index::class)->assertDontSee('Recém criado');
 
     Transaction::factory()
@@ -118,18 +118,28 @@ it('refreshes the list when a transaction is created elsewhere', function (): vo
         ->forCategory($this->expense)
         ->create(['description' => 'Recém criado']);
 
-    $component->dispatch('transaction::created')->assertSee('Recém criado');
+    $component->dispatch('transaction::changed')->assertSee('Recém criado');
 });
 
-it('refreshes the list when a transaction is deleted elsewhere', function (): void {
+it('deletes a transaction', function (): void {
     $transaction = Transaction::factory()
         ->forAccount($this->account)
         ->forCategory($this->expense)
         ->create(['description' => 'Some daqui']);
 
-    $component = Livewire::test(Index::class)->assertSee('Some daqui');
+    Livewire::test(Index::class)
+        ->assertSee('Some daqui')
+        ->call('delete', $transaction->id)
+        ->assertHasNoErrors()
+        ->assertDontSee('Some daqui');
 
-    $transaction->delete();
+    $this->assertDatabaseMissing('transactions', ['id' => $transaction->id]);
+});
 
-    $component->dispatch('transaction::deleted')->assertDontSee('Some daqui');
+it('keeps a transaction owned by someone else', function (): void {
+    $transaction = Transaction::factory()->create();
+
+    Livewire::test(Index::class)->call('delete', $transaction->id);
+
+    $this->assertDatabaseHas('transactions', ['id' => $transaction->id]);
 });

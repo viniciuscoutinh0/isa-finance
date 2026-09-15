@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Transactions\Concerns;
+namespace App\Livewire\Concerns;
 
+use App\Models\Account;
 use App\Queries\Accounts\AccountsQuery;
-use App\Queries\Categories\CategoriesQuery;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 
-trait WithFormOptions
+/**
+ * Accounts the current user can pick from, for any component that renders an
+ * account selector or filter.
+ */
+trait WithAccountOptions
 {
+    /**
+     * @return Collection<int, Account>
+     */
     #[Computed]
     public function accounts(): Collection
     {
         return app(AccountsQuery::class)->handle(Auth::user());
-    }
-
-    #[Computed]
-    public function categories(): Collection
-    {
-        return app(CategoriesQuery::class)->handle(Auth::user())->groupBy('type');
     }
 }

@@ -22,7 +22,7 @@
                 placeholder="Selecione uma das opções"
                 wire:model="form.category_id"
             >
-                @foreach ($this->categories as $type => $items)
+                @foreach ($this->categories->groupBy('type') as $type => $items)
                     <flux:select.group :label="\App\Enums\CategoryType::from($type)->label()">
                         @foreach ($items as $category)
                             <flux:select.option :value="$category->id">

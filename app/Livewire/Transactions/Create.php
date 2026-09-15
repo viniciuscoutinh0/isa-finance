@@ -7,8 +7,9 @@ namespace App\Livewire\Transactions;
 use App\Actions\Transactions\CreateTransaction;
 use App\Data\Transactions\TransactionData;
 use App\Exceptions\Transactions\TransactionException;
+use App\Livewire\Concerns\WithAccountOptions;
+use App\Livewire\Concerns\WithCategoryOptions;
 use App\Livewire\Forms\TransactionForm;
-use App\Livewire\Transactions\Concerns\WithFormOptions;
 use App\Models\Transaction;
 use Flux\Flux;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -19,7 +20,8 @@ use Throwable;
 
 final class Create extends Component
 {
-    use WithFormOptions;
+    use WithAccountOptions;
+    use WithCategoryOptions;
 
     public TransactionForm $form;
 
@@ -32,7 +34,7 @@ final class Create extends Component
 
             $action->handle(Auth::user(), TransactionData::fromArray($data));
 
-            $this->dispatch('transaction::created');
+            $this->dispatch('transaction::changed');
         } catch (AuthorizationException) {
             Flux::toast('Você não tem permissão para isso.', variant: 'danger');
 

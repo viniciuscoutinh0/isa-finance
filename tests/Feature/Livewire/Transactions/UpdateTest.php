@@ -39,7 +39,7 @@ it('prefills the form and formats the amount for the input', function (): void {
         ->create(['description' => 'Antigo']);
 
     Livewire::test(Update::class)
-        ->call('onShow', $transaction->id)
+        ->dispatch('transaction::edit', id: $transaction->id)
         ->assertSet('form.amount', '1.234,56')
         ->assertSet('form.description', 'Antigo')
         ->assertSet('form.date', '2026-03-10')
@@ -54,12 +54,12 @@ it('updates a transaction', function (): void {
         ->create(['description' => 'Antigo']);
 
     Livewire::test(Update::class)
-        ->call('onShow', $transaction->id)
+        ->dispatch('transaction::edit', id: $transaction->id)
         ->set('form.description', 'Novo')
         ->set('form.amount', '42,00')
         ->call('update')
         ->assertHasNoErrors()
-        ->assertDispatched('transaction::updated');
+        ->assertDispatched('transaction::changed');
 
     expect($transaction->fresh()->description)->toBe('Novo')
         ->and($transaction->fresh()->amount)->toBe(4200);
@@ -72,7 +72,7 @@ it('rejects a zero or negative amount', function (string $amount): void {
         ->create();
 
     Livewire::test(Update::class)
-        ->call('onShow', $transaction->id)
+        ->dispatch('transaction::edit', id: $transaction->id)
         ->set('form.amount', $amount)
         ->call('update')
         ->assertHasErrors('form.amount');
@@ -90,7 +90,7 @@ it('rejects an account that belongs to someone else', function (): void {
     $foreignAccount = Account::factory()->create();
 
     Livewire::test(Update::class)
-        ->call('onShow', $transaction->id)
+        ->dispatch('transaction::edit', id: $transaction->id)
         ->set('form.account_id', $foreignAccount->id)
         ->call('update')
         ->assertHasErrors('form.account_id');
@@ -100,7 +100,7 @@ it('does not load a transaction owned by someone else', function (): void {
     $transaction = Transaction::factory()->create(['description' => 'Alheio']);
 
     Livewire::test(Update::class)
-        ->call('onShow', $transaction->id)
+        ->dispatch('transaction::edit', id: $transaction->id)
         ->assertSet('form.transaction', null)
         ->assertSet('form.description', '');
 });

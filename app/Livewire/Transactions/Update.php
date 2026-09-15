@@ -7,8 +7,9 @@ namespace App\Livewire\Transactions;
 use App\Actions\Transactions\UpdateTransaction;
 use App\Data\Transactions\TransactionData;
 use App\Exceptions\Transactions\TransactionException;
+use App\Livewire\Concerns\WithAccountOptions;
+use App\Livewire\Concerns\WithCategoryOptions;
 use App\Livewire\Forms\TransactionForm;
-use App\Livewire\Transactions\Concerns\WithFormOptions;
 use App\Models\Transaction;
 use Flux\Flux;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -20,11 +21,12 @@ use Throwable;
 
 final class Update extends Component
 {
-    use WithFormOptions;
+    use WithAccountOptions;
+    use WithCategoryOptions;
 
     public TransactionForm $form;
 
-    #[On('open-transaction-update')]
+    #[On('transaction::edit')]
     public function onShow(int $id): void
     {
         $transaction = Transaction::query()->ownedBy(Auth::user())->find($id);
@@ -51,7 +53,7 @@ final class Update extends Component
                 TransactionData::fromArray($data),
             );
 
-            $this->dispatch('transaction::updated');
+            $this->dispatch('transaction::changed');
         } catch (AuthorizationException) {
             Flux::toast('Você não tem permissão para isso.', variant: 'danger');
 

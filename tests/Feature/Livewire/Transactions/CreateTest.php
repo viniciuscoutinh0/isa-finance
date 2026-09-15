@@ -85,7 +85,7 @@ it('creates a new transaction', function (): void {
         ->set('form.amount', '89,90')
         ->call('create')
         ->assertHasNoErrors()
-        ->assertDispatched('transaction::created');
+        ->assertDispatched('transaction::changed');
 
     $this->assertDatabaseHas('transactions', [
         'user_id' => $this->user->id,

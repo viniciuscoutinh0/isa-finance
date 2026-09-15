@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire\Transactions;
 
-use App\Queries\Accounts\AccountsQuery;
-use App\Queries\Categories\CategoriesQuery;
+use App\Actions\Transactions\DeleteTransaction;
+use App\Livewire\Concerns\WithAccountOptions;
+use App\Livewire\Concerns\WithCategoryOptions;
+use App\Models\Transaction;
 use App\Queries\Transactions\TransactionsQuery;
+use Flux\Flux;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -23,8 +26,13 @@ use Livewire\WithPagination;
 #[Title('Lançamentos')]
 final class Index extends Component
 {
+    use WithAccountOptions;
+    use WithCategoryOptions;
     use WithPagination;
 
+    /**
+     * @var array<string, mixed>
+     */
     #[Url]
     public array $filters = [
         'accounts' => [],
@@ -33,25 +41,22 @@ final class Index extends Component
         'search' => null,
     ];
 
+    /**
+     * @return LengthAwarePaginator<int, Transaction>
+     */
     #[Computed]
-    #[On('transaction::created')]
-    #[On('transaction::updated')]
-    #[On('transaction::deleted')]
     public function transactions(): LengthAwarePaginator
     {
         return app(TransactionsQuery::class)->handle(Auth::user(), $this->filters);
     }
 
-    #[Computed]
-    public function accounts(): Collection
+    /**
+     * Drop the memoized list after a sibling component writes a transaction.
+     */
+    #[On('transaction::changed')]
+    public function refreshList(): void
     {
-        return app(AccountsQuery::class)->handle(Auth::user());
-    }
-
-    #[Computed]
-    public function categories(): Collection
-    {
-        return app(CategoriesQuery::class)->handle(Auth::user());
+        unset($this->transactions);
     }
 
     public function updated(string $property): void
@@ -59,6 +64,23 @@ final class Index extends Component
         if (str_starts_with($property, 'filters')) {
             $this->resetPage();
         }
+    }
+
+    public function delete(Transaction $transaction, DeleteTransaction $action): void
+    {
+        try {
+            $this->authorize('delete', $transaction);
+        } catch (AuthorizationException) {
+            Flux::toast('Você não tem permissão para isso.', variant: 'danger');
+
+            return;
+        }
+
+        $action->handle($transaction);
+
+        $this->refreshList();
+
+        Flux::toast('Lançamento excluído.', variant: 'success');
     }
 
     public function render(): View

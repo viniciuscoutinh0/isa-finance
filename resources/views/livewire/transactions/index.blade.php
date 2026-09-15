@@ -175,15 +175,20 @@
                                 <flux:menu>
                                     <flux:menu.item
                                         icon="pencil-square"
-                                        x-on:click="$wire.dispatchTo('transactions.update', 'open-transaction-update', { id: '{{ $transaction->id }}' })"
+                                        x-on:click="$dispatch('transaction::edit', { id: {{ $transaction->id }} })"
                                     >
                                         Editar
                                     </flux:menu.item>
 
-                                    <livewire:transactions.delete
-                                        :transaction="$transaction"
-                                        wire:key="delete-transaction-{{ $transaction->id }}"
-                                    />
+                                    <flux:menu.item
+                                        type="button"
+                                        icon="trash"
+                                        variant="danger"
+                                        wire:click="delete({{ $transaction->id }})"
+                                        wire:confirm="Tem certeza que quer excluir o lançamento &quot;{{ $transaction->description }}&quot;? Essa ação não pode ser desfeita."
+                                    >
+                                        Excluir
+                                    </flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:table.cell>
