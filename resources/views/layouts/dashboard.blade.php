@@ -3,11 +3,11 @@
 
 <x-partials.head :title="$title ?? null" />
 
-<x-partials.body class="bg-zinc-100 dark:bg-zinc-900">
+<x-partials.body>
     <flux:sidebar
         sticky
         collapsible="mobile"
-        class="bg-transparent"
+        class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 md:border-0 md:bg-transparent"
     >
         <flux:sidebar.header>
             <flux:sidebar.brand
@@ -131,7 +131,7 @@
         <livewire:assistant.chat />
     @endpersist
 
-    <flux:toast />
+
 </x-partials.body>
 
 </html>
