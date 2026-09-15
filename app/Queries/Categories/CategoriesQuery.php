@@ -17,7 +17,6 @@ final readonly class CategoriesQuery
         return Category::query()
             ->where('user_id', $user->id)
             ->when($type, fn (Builder $query): Builder => $query->where('type', $type))
-            ->orderBy('type', 'DESC')
             ->orderBy('name')
             ->get();
     }
