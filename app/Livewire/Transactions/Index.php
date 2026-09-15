@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Transactions;
 
-use App\Livewire\Forms\TransactionForm;
 use App\Queries\Accounts\AccountsQuery;
 use App\Queries\Categories\CategoriesQuery;
 use App\Queries\Transactions\TransactionsQuery;
@@ -25,8 +24,6 @@ use Livewire\WithPagination;
 final class Index extends Component
 {
     use WithPagination;
-
-    public TransactionForm $form;
 
     #[Url]
     public array $filters = [

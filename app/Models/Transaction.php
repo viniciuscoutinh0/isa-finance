@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\CategoryType;
 use App\Filters\Concerns\HasFilter;
 use Database\Factories\TransactionFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ final class Transaction extends Model
 {
     /** @use HasFactory<TransactionFactory> */
     use HasFactory;
+
     use HasFilter;
 
     /**
@@ -48,6 +50,15 @@ final class Transaction extends Model
     public function type(): CategoryType
     {
         return $this->category->type;
+    }
+
+    /**
+     * @param  Builder<Transaction>  $query
+     * @return Builder<Transaction>
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        return $query->where('user_id', $user->id);
     }
 
     /**

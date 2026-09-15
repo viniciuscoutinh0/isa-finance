@@ -21,12 +21,12 @@ final readonly class TransactionData
     public static function fromArray(array $data): self
     {
         return new self(
-            accountId: (int) $data['accountId'],
-            categoryId: (int) $data['categoryId'],
+            accountId: (int) $data['account_id'],
+            categoryId: (int) $data['category_id'],
             date: CarbonImmutable::parse($data['date']),
             description: $data['description'],
             amount: Money::parse($data['amount']),
-            notes: filled($data['notes']) ? trim($data['notes']) : null,
+            notes: filled($data['notes'] ?? null) ? trim($data['notes']) : null,
         );
     }
 

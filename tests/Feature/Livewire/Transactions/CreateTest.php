@@ -34,15 +34,15 @@ it('renders successfully', function (): void {
 
 it('should requireds transactions fields', function (): void {
     Livewire::test(Create::class)
-        ->set('form.accountId', '')
-        ->set('form.categoryId', '')
+        ->set('form.account_id', '')
+        ->set('form.category_id', '')
         ->set('form.date', '')
         ->set('form.description', '')
         ->set('form.amount', '')
         ->call('create')
         ->assertHasErrors([
-            'form.accountId' => 'required',
-            'form.categoryId' => 'required',
+            'form.account_id' => 'required',
+            'form.category_id' => 'required',
             'form.date' => 'required',
             'form.description' => 'required',
             'form.amount' => 'required',
@@ -51,8 +51,8 @@ it('should requireds transactions fields', function (): void {
 
 it('rejects a zero or negative amount', function (string $amount): void {
     Livewire::test(Create::class)
-        ->set('form.accountId', (string) $this->account->id)
-        ->set('form.categoryId', (string) $this->expense->id)
+        ->set('form.account_id', (string) $this->account->id)
+        ->set('form.category_id', (string) $this->expense->id)
         ->set('form.date', '2026-03-10')
         ->set('form.description', 'Feira')
         ->set('form.amount', $amount)
@@ -67,19 +67,19 @@ it('rejects an account that belongs to someone else', function (): void {
     $foreignAccount = Account::factory()->create();
 
     Livewire::test(Create::class)
-        ->set('form.accountId', $foreignAccount->id)
-        ->set('form.categoryId', $this->expense->id)
+        ->set('form.account_id', $foreignAccount->id)
+        ->set('form.category_id', $this->expense->id)
         ->set('form.date', '2026-03-10')
         ->set('form.description', 'Feira')
         ->set('form.amount', '10,00')
         ->call('create')
-        ->assertHasErrors('form.accountId');
+        ->assertHasErrors('form.account_id');
 });
 
 it('creates a new transaction', function (): void {
     Livewire::test(Create::class)
-        ->set('form.accountId', (string) $this->account->id)
-        ->set('form.categoryId', (string) $this->expense->id)
+        ->set('form.account_id', (string) $this->account->id)
+        ->set('form.category_id', (string) $this->expense->id)
         ->set('form.date', '2026-03-10')
         ->set('form.description', 'Feira')
         ->set('form.amount', '89,90')

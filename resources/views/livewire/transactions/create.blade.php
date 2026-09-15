@@ -19,7 +19,7 @@
             variant="listbox"
             searchable
             placeholder="Selecione uma das opções"
-            wire:model="form.categoryId"
+            wire:model="form.category_id"
         >
             @foreach ($this->categories as $type => $items)
                 <flux:select.group :label="\App\Enums\CategoryType::from($type)->label()">
@@ -44,7 +44,7 @@
             badge="Obrigatório"
             placeholder="Selecione uma das opções"
             variant="listbox"
-            wire:model="form.accountId"
+            wire:model="form.account_id"
         >
 
             @foreach ($this->accounts as $account)

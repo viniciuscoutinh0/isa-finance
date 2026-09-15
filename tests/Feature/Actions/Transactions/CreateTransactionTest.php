@@ -16,8 +16,8 @@ beforeEach(function (): void {
 
 it('creates a transaction linked to the account, category and user', function (): void {
     $data = TransactionData::fromArray([
-        'accountId' => $this->account->id,
-        'categoryId' => $this->category->id,
+        'account_id' => $this->account->id,
+        'category_id' => $this->category->id,
         'date' => '2026-03-15',
         'description' => 'Mercado do mês',
         'amount' => '345,90',
@@ -42,8 +42,8 @@ it('creates a transaction linked to the account, category and user', function ()
 
 it('allows a null note', function (): void {
     $data = TransactionData::fromArray([
-        'accountId' => $this->account->id,
-        'categoryId' => $this->category->id,
+        'account_id' => $this->account->id,
+        'category_id' => $this->category->id,
         'date' => '2026-03-15',
         'description' => 'Mercado do mês',
         'amount' => '345,90',
