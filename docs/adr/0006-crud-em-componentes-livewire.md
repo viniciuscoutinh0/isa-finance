@@ -54,6 +54,23 @@ payload. Uma listagem de 20 linhas paga 20 componentes para oferecer 20 botões.
 Como método do `Index`, é `wire:click="delete({{ $id }})"` com `wire:confirm`,
 a custo zero. Mesmo critério vale para `archive` e `unarchive`.
 
+## Quando o formato não se aplica
+
+A divisão paga por si quando o `Index` carrega estado que o formulário não usa:
+paginação, filtros, uma tabela longa. Sem isso, ela só adiciona arquivos.
+
+`app/Livewire/Categories/` fica deliberadamente num componente único. Categorias
+não tem paginação, não tem filtro, não tem componente por linha e cabe em uma
+tela — o `save()` bifurcado entre criar e atualizar custa menos que três
+componentes e dois modais para o mesmo trabalho.
+
+O que vale para todo domínio, independente de dividir ou não: ruleset em
+`app/Rules/`, DTO em `app/Data/`, Action recebendo o DTO, e chaves em
+`snake_case` na fronteira. Categorias segue tudo isso.
+
+Um módulo que hoje é único migra para o formato quando ganhar a primeira
+listagem paginada ou o primeiro filtro.
+
 ## Validação compartilhada
 
 As regras ficam em `app/Rules/<Domínio>/<X>Rules.php`: classe sem estado, métodos

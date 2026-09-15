@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Livewire\Forms;
 
-use App\Enums\CategoryType;
 use App\Models\Category;
+use App\Models\User;
+use App\Rules\Categories\CategoryRules;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Form;
 
 final class CategoryForm extends Form
 {
-    public ?int $categoryId = null;
+    #[Locked]
+    public ?Category $category = null;
 
     public string $name = '';
 
@@ -23,27 +25,25 @@ final class CategoryForm extends Form
      */
     public function rules(): array
     {
-        return [
-            'name' => [
-                'required', 'string', 'max:255',
-                Rule::unique('categories', 'name')
-                    ->where('user_id', Auth::id())
-                    ->where('type', $this->type)
-                    ->ignore($this->categoryId),
-            ],
-            'type' => ['required', Rule::enum(CategoryType::class)],
-        ];
+        /** @var User $user */
+        $user = Auth::user();
+
+        return CategoryRules::for($user, $this->type, $this->category?->id);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function validationAttributes(): array
+    {
+        return CategoryRules::attributes();
     }
 
     public function setCategory(Category $category): void
     {
-        $this->categoryId = $category->id;
+        $this->category = $category;
+
         $this->name = $category->name;
         $this->type = $category->type->value;
-    }
-
-    public function type(): CategoryType
-    {
-        return CategoryType::from($this->type);
     }
 }

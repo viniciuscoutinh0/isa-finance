@@ -52,7 +52,7 @@
     <flux:modal wire:model.self="showModal" class="md:w-96">
         <form wire:submit="save" class="flex flex-col gap-6">
             <flux:heading size="lg">
-                {{ $form->categoryId ? 'Editar categoria' : 'Nova categoria' }}
+                {{ $form->category ? 'Editar categoria' : 'Nova categoria' }}
             </flux:heading>
 
             <flux:input wire:model="form.name" label="Nome" required />
