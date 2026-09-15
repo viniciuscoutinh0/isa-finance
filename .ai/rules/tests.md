@@ -28,3 +28,9 @@ Pest 5 + `pest-plugin-laravel` + `pest-plugin-livewire`. Create with `php artisa
 - Name states the observable result: `it('cancels the order and refunds the payment')`, never `it('works')` or a method name.
 - Every action reachable by a user gets an authorization test (guest, wrong owner/tenant, right user).
 - Run inside Docker: `docker compose exec -T blade_app php artisan test --compact` (narrow with a path or `--filter`).
+
+## Characterize before refactoring, move tests with the code
+
+- Before restructuring a component or changing an Action signature, write the tests for the behaviour that exists **first**, against the current shape. A test written after the refactor describes what was just written, not what the module did.
+- When a class is split or renamed, its tests move in the same commit. A test file left pointing at the old shape fails for the wrong reason and gets ignored, which is how a whole suite goes stale without anyone noticing.
+- A test that fakes the thing under test proves nothing: asserting a canned reply appears on screen while the real tool never runs will stay green through a broken write path. Assert the effect — the row in the database, the dispatched event.
