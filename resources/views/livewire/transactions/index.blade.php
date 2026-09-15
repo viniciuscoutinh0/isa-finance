@@ -4,15 +4,22 @@
             <flux:heading
                 size="xl"
                 level="1"
-            >Lançamentos</flux:heading>
-            <flux:text class="mt-2">Tudo que entrou e saiu das suas contas.</flux:text>
+            >
+                Lançamentos
+            </flux:heading>
+            <flux:text class="mt-2">
+                Tudo que entrou e saiu das suas contas.
+            </flux:text>
         </div>
+
         <flux:button
             class="w-full shrink-0 sm:w-auto"
             variant="primary"
             icon="plus"
             x-on:click="$flux.modal('transaction-create').show();"
-        >Novo lançamento</flux:button>
+        >
+            Novo lançamento
+        </flux:button>
     </div>
 
     <flux:separator
@@ -22,42 +29,68 @@
 
     <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <flux:input
-            wire:model.live.debounce.400ms="search"
+            wire:model.live.debounce.500ms="filters.search"
             icon="magnifying-glass"
             placeholder="Buscar descrição"
-        />
+        >
+            <x-slot name="iconTrailing">
+                @if (filled($filters['search']))
+                    <flux:button
+                        size="sm"
+                        variant="subtle"
+                        icon="x-mark"
+                        class="-mr-1.5"
+                        wire:click="$set('filters.search', null)"
+                    />
+                @endif
+            </x-slot>
+        </flux:input>
 
         <flux:select
-            wire:model.live="filterAccount"
+            multiple
             placeholder="Todas as contas"
             variant="listbox"
+            wire:model.live="filters.accounts"
         >
-            <flux:select.option value="">Todas as contas</flux:select.option>
             @foreach ($this->accounts as $account)
                 <flux:select.option
-                    value="{{ $account->id }}"
+                    :value="$account->id"
                     :icon="$account->type->icon()"
-                >{{ $account->name }}</flux:select.option>
+                >
+                    {{ $account->name }}
+                </flux:select.option>
             @endforeach
         </flux:select>
 
         <flux:select
-            wire:model.live="filterCategory"
+            multiple
             placeholder="Todas as categorias"
+            variant="listbox"
+            wire:model.live="filters.categories"
         >
-            <flux:select.option value="">Todas as categorias</flux:select.option>
             @foreach ($this->categories as $category)
-                <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                <flux:select.option :value="$category->id">
+                    <div class="flex items-center gap-2">
+                        <div @class([
+                            'rounded-full size-4',
+                            'bg-rose-500' => $category->type->color() === 'rose',
+                            'bg-green-500' => $category->type->color() === 'green',
+                        ])></div> {{ $category->name }}
+                    </div>
+                </flux:select.option>
             @endforeach
         </flux:select>
 
         <flux:select
-            wire:model.live="filterType"
+            multiple
             placeholder="Entradas e saídas"
+            variant="listbox"
+            wire:model.live="filters.types"
         >
-            <flux:select.option value="">Entradas e saídas</flux:select.option>
             @foreach (\App\Enums\CategoryType::cases() as $type)
-                <flux:select.option value="{{ $type->value }}">{{ $type->label() }}</flux:select.option>
+                <flux:select.option :value="$type->value">
+                    {{ $type->label() }}
+                </flux:select.option>
             @endforeach
         </flux:select>
     </div>
@@ -67,17 +100,36 @@
             icon="banknotes"
             variant="secondary"
         >
-            <flux:callout.heading>Nenhum lançamento encontrado</flux:callout.heading>
-            <flux:callout.text>Ajuste os filtros ou registre um novo lançamento.</flux:callout.text>
+            <flux:callout.heading>
+                Nenhum lançamento encontrado
+            </flux:callout.heading>
+            <flux:callout.text>
+                Ajuste os filtros ou registre um novo lançamento.
+            </flux:callout.text>
         </flux:callout>
     @else
         <flux:table :paginate="$this->transactions">
             <flux:table.columns>
-                <flux:table.column>Data</flux:table.column>
-                <flux:table.column>Descrição</flux:table.column>
-                <flux:table.column>Categoria</flux:table.column>
-                <flux:table.column>Conta</flux:table.column>
-                <flux:table.column align="end">Valor</flux:table.column>
+                <flux:table.column>
+                    Data
+                </flux:table.column>
+
+                <flux:table.column>
+                    Descrição
+                </flux:table.column>
+
+                <flux:table.column>
+                    Categoria
+                </flux:table.column>
+
+                <flux:table.column>
+                    Conta
+                </flux:table.column>
+
+                <flux:table.column align="end">
+                    Valor
+                </flux:table.column>
+
                 <flux:table.column />
             </flux:table.columns>
 
@@ -88,22 +140,31 @@
                         <flux:table.cell class="whitespace-nowrap">
                             {{ $transaction->date->translatedFormat('d/m/Y') }}
                         </flux:table.cell>
+
                         <flux:table.cell class="font-medium">
                             {{ $transaction->description }}
                         </flux:table.cell>
+
                         <flux:table.cell>
                             <flux:badge
                                 size="sm"
                                 :color="$type->color()"
-                            >{{ $transaction->category->name }}</flux:badge>
+                            >
+                                {{ $transaction->category->name }}
+                            </flux:badge>
                         </flux:table.cell>
-                        <flux:table.cell>{{ $transaction->account->name }}</flux:table.cell>
+
+                        <flux:table.cell>
+                            {{ $transaction->account->name }}
+                        </flux:table.cell>
+
                         <flux:table.cell
                             align="end"
                             class="whitespace-nowrap font-medium {{ $type === \App\Enums\CategoryType::Income ? 'text-green-600 dark:text-green-400' : 'text-rose-600 dark:text-rose-400' }}"
                         >
                             {{ $type === \App\Enums\CategoryType::Income ? '+' : '−' }}{{ \App\Data\Money::fromCents($transaction->amount)->format() }}
                         </flux:table.cell>
+
                         <flux:table.cell align="end">
                             <flux:dropdown>
                                 <flux:button

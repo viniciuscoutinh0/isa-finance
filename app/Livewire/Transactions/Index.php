@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Transactions;
 
-use App\Enums\CategoryType;
 use App\Livewire\Forms\TransactionForm;
 use App\Queries\Accounts\AccountsQuery;
 use App\Queries\Categories\CategoriesQuery;
@@ -30,16 +29,12 @@ final class Index extends Component
     public TransactionForm $form;
 
     #[Url]
-    public string $filterAccount = '';
-
-    #[Url]
-    public string $filterCategory = '';
-
-    #[Url]
-    public string $filterType = '';
-
-    #[Url]
-    public string $search = '';
+    public array $filters = [
+        'accounts' => [],
+        'categories' => [],
+        'types' => [],
+        'search' => null,
+    ];
 
     #[Computed]
     #[On('transaction::created')]
@@ -47,12 +42,7 @@ final class Index extends Component
     #[On('transaction::deleted')]
     public function transactions(): LengthAwarePaginator
     {
-        return app(TransactionsQuery::class)->handle(auth()->user(), [
-            'account_id' => $this->filterAccount !== '' ? (int) $this->filterAccount : null,
-            'category_id' => $this->filterCategory !== '' ? (int) $this->filterCategory : null,
-            'type' => $this->filterType !== '' ? CategoryType::from($this->filterType) : null,
-            'search' => $this->search,
-        ]);
+        return app(TransactionsQuery::class)->handle(Auth::user(), $this->filters);
     }
 
     #[Computed]
@@ -69,7 +59,7 @@ final class Index extends Component
 
     public function updated(string $property): void
     {
-        if (str_starts_with($property, 'filter') || $property === 'search') {
+        if (str_starts_with($property, 'filters')) {
             $this->resetPage();
         }
     }

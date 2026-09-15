@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\CategoryType;
+use App\Filters\Concerns\HasFilter;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ final class Transaction extends Model
 {
     /** @use HasFactory<TransactionFactory> */
     use HasFactory;
+    use HasFilter;
 
     /**
      * @return BelongsTo<User, $this>

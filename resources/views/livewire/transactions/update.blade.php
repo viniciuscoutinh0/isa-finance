@@ -27,11 +27,12 @@
                         @foreach ($items as $category)
                             <flux:select.option :value="$category->id">
                                 <div class="flex items-center gap-2">
-                                    <div @class([
+                                    <span @class([
                                         'rounded-full size-4',
                                         'bg-rose-500' => \App\Enums\CategoryType::from($type)->color() === 'rose',
                                         'bg-green-500' => \App\Enums\CategoryType::from($type)->color() === 'green',
-                                    ])></div> {{ $category->name }}
+                                    ])></span>
+                                    {{ $category->name }}
                                 </div>
                             </flux:select.option>
                         @endforeach
