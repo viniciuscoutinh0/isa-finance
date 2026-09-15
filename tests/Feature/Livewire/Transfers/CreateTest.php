@@ -105,3 +105,21 @@ it('rejects an account that belongs to someone else', function (): void {
 
     $this->assertDatabaseCount('transfers', 0);
 });
+
+it('accepts an archived account on either side', function (): void {
+    $archived = Account::factory()->ownedBy($this->user)->archived()->create(['name' => 'Cartão antigo']);
+
+    Livewire::test(Create::class)
+        ->set('form.from_account_id', $this->nubank->id)
+        ->set('form.to_account_id', $archived->id)
+        ->set('form.date', '2026-03-10')
+        ->set('form.amount', '300,00')
+        ->call('create')
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('transfers', [
+        'from_account_id' => $this->nubank->id,
+        'to_account_id' => $archived->id,
+        'amount' => 30000,
+    ]);
+});

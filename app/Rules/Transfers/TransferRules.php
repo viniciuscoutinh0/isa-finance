@@ -22,9 +22,9 @@ final class TransferRules
      */
     public static function for(User $user): array
     {
-        $ownAccount = Rule::exists('accounts', 'id')
-            ->where('user_id', $user->id)
-            ->whereNull('archived_at');
+        // Archived accounts stay eligible: paying off an archived credit card is
+        // a normal move, and a transfer never changes what the account is for.
+        $ownAccount = Rule::exists('accounts', 'id')->where('user_id', $user->id);
 
         return [
             'from_account_id' => [
