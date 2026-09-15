@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Livewire\Accounts\Index;
 use App\Models\Account;
+use App\Models\Category;
+use App\Models\Transaction;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -116,6 +118,38 @@ it('deletes an account', function (): void {
         ->assertHasNoErrors();
 
     $this->assertDatabaseMissing('accounts', ['id' => $account->id]);
+});
+
+it('requires a name', function (): void {
+    Livewire::test(Index::class)
+        ->call('create')
+        ->set('form.name', '')
+        ->set('form.type', 'checking')
+        ->call('save')
+        ->assertHasErrors(['form.name' => 'required']);
+});
+
+it('refuses to delete an account that has transactions', function (): void {
+    $account = Account::factory()->ownedBy($this->user)->create();
+    $category = Category::factory()->ownedBy($this->user)->expense()->create();
+
+    Transaction::factory()->forAccount($account)->forCategory($category)->create();
+
+    Livewire::test(Index::class)
+        ->call('delete', $account)
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('accounts', ['id' => $account->id]);
+});
+
+it('keeps an account owned by someone else', function (): void {
+    $account = Account::factory()->create();
+
+    Livewire::test(Index::class)
+        ->call('delete', $account)
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('accounts', ['id' => $account->id]);
 });
 
 it('cannot edit an account owned by someone else', function (): void {
