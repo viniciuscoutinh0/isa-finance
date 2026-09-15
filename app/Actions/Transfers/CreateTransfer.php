@@ -4,36 +4,41 @@ declare(strict_types=1);
 
 namespace App\Actions\Transfers;
 
-use App\Data\Money;
+use App\Data\Transfers\TransferData;
 use App\Exceptions\Transfers\SameAccountTransfer;
-use App\Models\Account;
+use App\Exceptions\Transfers\TransferException;
+use App\Exceptions\Transfers\UnknownTransferAccount;
 use App\Models\Transfer;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 
 final readonly class CreateTransfer
 {
     /**
-     * @throws SameAccountTransfer
+     * @throws TransferException
      */
-    public function handle(
-        User $user,
-        Account $from,
-        Account $to,
-        CarbonImmutable $date,
-        Money $amount,
-        ?string $notes = null,
-    ): Transfer {
-        if ($from->id === $to->id) {
+    public function handle(User $user, TransferData $data): Transfer
+    {
+        if ($data->fromAccountId === $data->toAccountId) {
             throw SameAccountTransfer::make();
         }
 
-        return $user->transfers()->create([
-            'from_account_id' => $from->id,
-            'to_account_id' => $to->id,
-            'amount' => $amount->cents,
-            'date' => $date,
-            'notes' => $notes,
-        ]);
+        $this->assertOwnsAccounts($user, $data);
+
+        return $user->transfers()->create($data->toArray());
+    }
+
+    /**
+     * @throws TransferException
+     */
+    private function assertOwnsAccounts(User $user, TransferData $data): void
+    {
+        $owned = $user
+            ->accounts()
+            ->whereKey([$data->fromAccountId, $data->toAccountId])
+            ->count();
+
+        if ($owned !== 2) {
+            throw UnknownTransferAccount::make();
+        }
     }
 }
