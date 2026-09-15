@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\AccountType;
 use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,15 @@ final class Account extends Model
     /**
      * @return BelongsTo<User, $this>
      */
+    /**
+     * @param  Builder<Account>  $query
+     * @return Builder<Account>
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        return $query->where('user_id', $user->id);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

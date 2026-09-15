@@ -3,14 +3,18 @@
 declare(strict_types=1);
 
 use App\Actions\Accounts\UpdateAccount;
-use App\Data\Money;
+use App\Data\Accounts\AccountData;
 use App\Enums\AccountType;
 use App\Models\Account;
 
 it('updates name, type and initial balance', function (): void {
     $account = Account::factory()->ofType(AccountType::Checking)->withInitialBalance(1000)->create();
 
-    app(UpdateAccount::class)->handle($account, 'Itaú', AccountType::Savings, Money::fromCents(250000));
+    app(UpdateAccount::class)->handle($account, AccountData::fromArray([
+        'name' => 'Itaú',
+        'type' => 'savings',
+        'initial_balance' => '2.500,00',
+    ]));
 
     $account->refresh();
 

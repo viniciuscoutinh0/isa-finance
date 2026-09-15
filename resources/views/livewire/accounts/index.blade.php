@@ -4,13 +4,13 @@
             <flux:heading size="xl" level="1">Contas</flux:heading>
             <flux:text class="mt-2">Onde seu dinheiro fica: conta-corrente, poupança, dinheiro e cartão.</flux:text>
         </div>
-        <flux:button class="w-full shrink-0 sm:w-auto" variant="primary" icon="plus" wire:click="create">Nova conta</flux:button>
+        <flux:button class="w-full shrink-0 sm:w-auto" variant="primary" icon="plus" x-on:click="$dispatch('account::create')">Nova conta</flux:button>
     </div>
 
     <flux:separator variant="subtle" class="my-6" />
 
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <flux:switch wire:model.live="showArchived" label="Mostrar arquivadas" />
+        <flux:switch wire:model.live="filters.archived" label="Mostrar arquivadas" />
         <div class="sm:text-right">
             <flux:text size="sm">Saldo total (ativas)</flux:text>
             <flux:heading @class(['text-rose-500 dark:text-rose-400' => $this->activeTotal->isNegative()])>
@@ -21,7 +21,7 @@
 
     @if ($this->accounts->isEmpty())
         <flux:callout icon="wallet" variant="secondary">
-            @if ($showArchived)
+            @if ($filters['archived'])
                 <flux:callout.heading>Nenhuma conta arquivada</flux:callout.heading>
                 <flux:callout.text>As contas que você arquivar aparecem aqui.</flux:callout.text>
             @else
@@ -32,15 +32,15 @@
     @else
         {{-- Filtro por tipo — clique numa tag para filtrar os cards. --}}
         <div class="mb-4 flex flex-wrap items-center gap-2">
-            <flux:button size="sm" :variant="($filterType === null || $filterType === '') ? 'primary' : 'filled'"
-                wire:click="$set('filterType', null)">
+            <flux:button size="sm" :variant="($filters['type'] === null || $filters['type'] === '') ? 'primary' : 'filled'"
+                wire:click="$set('filters.type', null)">
                 Todas
             </flux:button>
 
             @foreach ($this->availableTypes as $type)
                 <flux:button size="sm" :icon="$type->icon()"
-                    :variant="$filterType === $type->value ? 'primary' : 'filled'"
-                    wire:click="$set('filterType', '{{ $type->value }}')">
+                    :variant="$filters['type'] === $type->value ? 'primary' : 'filled'"
+                    wire:click="$set('filters.type', '{{ $type->value }}')">
                     {{ $type->label() }}
                 </flux:button>
             @endforeach
@@ -50,7 +50,7 @@
             <flux:callout icon="wallet" variant="secondary">
                 <flux:callout.heading>Nenhuma conta desse tipo</flux:callout.heading>
                 <flux:callout.text>
-                    <flux:link as="button" wire:click="$set('filterType', null)">Ver todas as contas</flux:link>
+                    <flux:link as="button" wire:click="$set('filters.type', null)">Ver todas as contas</flux:link>
                 </flux:callout.text>
             </flux:callout>
         @else
@@ -82,7 +82,7 @@
 
                         <div class="flex flex-wrap items-center gap-1">
                             <flux:button size="sm" variant="subtle" icon="pencil-square"
-                                wire:click="edit({{ $account->id }})">Editar</flux:button>
+                                x-on:click="$dispatch('account::edit', { id: {{ $account->id }} })">Editar</flux:button>
 
                             @if ($account->archived)
                                 <flux:button size="sm" variant="subtle" icon="arrow-uturn-up"
@@ -102,29 +102,6 @@
         @endif
     @endif
 
-    <flux:modal wire:model.self="showModal" class="md:w-96">
-        <form wire:submit="save" class="flex flex-col gap-6">
-            <flux:heading size="lg">
-                {{ $form->accountId ? 'Editar conta' : 'Nova conta' }}
-            </flux:heading>
-
-            <flux:input wire:model="form.name" label="Nome" placeholder="Ex.: Nubank, Carteira, Poupança" required />
-
-            <flux:select wire:model="form.type" label="Tipo" required>
-                @foreach (\App\Enums\AccountType::cases() as $type)
-                    <flux:select.option value="{{ $type->value }}">{{ $type->label() }}</flux:select.option>
-                @endforeach
-            </flux:select>
-
-            <flux:input wire:model="form.initialBalance" label="Saldo inicial" inputmode="decimal"
-                description="Use vírgula para os centavos. Se for dívida no cartão, use um valor negativo." />
-
-            <div class="flex justify-end gap-2">
-                <flux:modal.close>
-                    <flux:button variant="filled">Cancelar</flux:button>
-                </flux:modal.close>
-                <flux:button type="submit" variant="primary">Salvar</flux:button>
-            </div>
-        </form>
-    </flux:modal>
+    <livewire:accounts.create />
+    <livewire:accounts.update />
 </div>
