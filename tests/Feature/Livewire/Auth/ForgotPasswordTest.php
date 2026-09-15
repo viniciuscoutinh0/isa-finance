@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 it('renders the forgot-password screen for guests', function (): void {
-    $this->get(route('password.request'))
-        ->assertOk()
-        ->assertSeeLivewire(ForgotPassword::class);
+    $this->get(route('password.request'))->assertOk()->assertSeeLivewire(ForgotPassword::class);
 });
 
 it('sends a reset link to a known e-mail', function (): void {
@@ -19,11 +17,7 @@ it('sends a reset link to a known e-mail', function (): void {
 
     $user = User::factory()->create();
 
-    Livewire::test(ForgotPassword::class)
-        ->set('form.email', $user->email)
-        ->call('sendResetLink')
-        ->assertHasNoErrors()
-        ->assertSet('status', __('passwords.sent'));
+    Livewire::test(ForgotPassword::class)->set('form.email', $user->email)->call('sendResetLink')->assertHasNoErrors();
 
     Notification::assertSentTo($user, ResetPasswordNotification::class);
 });

@@ -10,27 +10,26 @@ use App\Rules\MoneyString;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Form;
 
 final class TransactionForm extends Form
 {
-    public ?int $transactionId = null;
+    #[Locked]
+    public ?Transaction $transaction = null;
 
-    public string $accountId = '';
+    public ?int $accountId = null;
 
-    public string $categoryId = '';
+    public ?int $categoryId = null;
 
-    public string $date = '';
+    public ?string $date = null;
 
     public string $description = '';
 
     public string $amount = '';
 
-    public string $notes = '';
+    public ?string $notes = null;
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         return [
@@ -42,10 +41,26 @@ final class TransactionForm extends Form
                 'required',
                 Rule::exists('categories', 'id')->where('user_id', Auth::id()),
             ],
-            'date' => ['required', 'date'],
-            'description' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'string', new MoneyString(allowNegative: false, allowZero: false)],
-            'notes' => ['nullable', 'string', 'max:1000'],
+            'date' => [
+                'required',
+                'date',
+                'date_format:Y-m-d',
+            ],
+            'description' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'amount' => [
+                'required',
+                'string',
+                new MoneyString(allowNegative: false, allowZero: false),
+            ],
+            'notes' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
         ];
     }
 
@@ -66,13 +81,14 @@ final class TransactionForm extends Form
 
     public function setTransaction(Transaction $transaction): void
     {
-        $this->transactionId = $transaction->id;
-        $this->accountId = (string) $transaction->account_id;
-        $this->categoryId = (string) $transaction->category_id;
+        $this->transaction = $transaction;
+
+        $this->accountId = $transaction->account_id;
+        $this->categoryId = $transaction->category_id;
         $this->date = $transaction->date->toDateString();
         $this->description = $transaction->description;
         $this->amount = Money::fromCents($transaction->amount)->forInput();
-        $this->notes = (string) $transaction->notes;
+        $this->notes = $transaction->notes;
     }
 
     public function amountMoney(): Money

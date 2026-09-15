@@ -20,8 +20,14 @@
     </div>
 
     @if ($this->accounts->isEmpty())
-        <flux:callout icon="wallet">
-            {{ $showArchived ? 'Nenhuma conta arquivada.' : 'Nenhuma conta ainda. Crie a primeira.' }}
+        <flux:callout icon="wallet" variant="secondary">
+            @if ($showArchived)
+                <flux:callout.heading>Nenhuma conta arquivada</flux:callout.heading>
+                <flux:callout.text>As contas que você arquivar aparecem aqui.</flux:callout.text>
+            @else
+                <flux:callout.heading>Você ainda não tem nenhuma conta</flux:callout.heading>
+                <flux:callout.text>Toque em “Nova conta” para criar a primeira.</flux:callout.text>
+            @endif
         </flux:callout>
     @else
         {{-- Filtro por tipo — clique numa tag para filtrar os cards. --}}
@@ -41,9 +47,11 @@
         </div>
 
         @if ($this->visibleAccounts->isEmpty())
-            <flux:callout icon="wallet">
-                Nenhuma conta desse tipo.
-                <flux:link as="button" wire:click="$set('filterType', null)">Ver todas</flux:link>.
+            <flux:callout icon="wallet" variant="secondary">
+                <flux:callout.heading>Nenhuma conta desse tipo</flux:callout.heading>
+                <flux:callout.text>
+                    <flux:link as="button" wire:click="$set('filterType', null)">Ver todas as contas</flux:link>
+                </flux:callout.text>
             </flux:callout>
         @else
             <div class="grid gap-3 sm:grid-cols-2">
@@ -51,7 +59,7 @@
                     <flux:card wire:key="account-{{ $account->id }}" class="flex flex-col gap-3">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-2">
-                                <flux:icon :icon="$account->type->icon()" class="size-5 text-zinc-400" />
+                                <flux:icon :icon="$account->type->icon()" variant="mini" class="text-zinc-400" />
                                 <div>
                                     <flux:heading>{{ $account->name }}</flux:heading>
                                     <flux:text size="sm">{{ $account->type->label() }}</flux:text>
@@ -86,7 +94,7 @@
 
                             <flux:button size="sm" variant="subtle" icon="trash"
                                 wire:click="delete({{ $account->id }})"
-                                wire:confirm="Excluir a conta “{{ $account->name }}”? Isso não pode ser desfeito.">Excluir</flux:button>
+                                wire:confirm="Tem certeza que quer excluir a conta “{{ $account->name }}”? Essa ação não pode ser desfeita.">Excluir</flux:button>
                         </div>
                     </flux:card>
                 @endforeach
@@ -100,7 +108,7 @@
                 {{ $form->accountId ? 'Editar conta' : 'Nova conta' }}
             </flux:heading>
 
-            <flux:input wire:model="form.name" label="Nome" placeholder="Ex.: Nubank" required />
+            <flux:input wire:model="form.name" label="Nome" placeholder="Ex.: Nubank, Carteira, Poupança" required />
 
             <flux:select wire:model="form.type" label="Tipo" required>
                 @foreach (\App\Enums\AccountType::cases() as $type)
@@ -109,7 +117,7 @@
             </flux:select>
 
             <flux:input wire:model="form.initialBalance" label="Saldo inicial" inputmode="decimal"
-                description="Use vírgula para os centavos. Negativo para dívida de cartão." />
+                description="Use vírgula para os centavos. Se for dívida no cartão, use um valor negativo." />
 
             <div class="flex justify-end gap-2">
                 <flux:modal.close>

@@ -8,7 +8,7 @@
     >
         <div>
             <flux:heading size="lg">Assistente</flux:heading>
-            <flux:text size="sm">Pergunte sobre suas contas e lançamentos.</flux:text>
+            <flux:text size="sm">Pergunte sobre suas contas e lançamentos, ou peça para eu registrar algo por você.</flux:text>
         </div>
 
         <flux:separator
@@ -74,8 +74,8 @@
                     size="sm"
                     class="m-auto text-center"
                 >
-                    Nenhuma mensagem ainda. Experimente “quanto gastei este mês?” ou
-                    “adiciona um lançamento de 50 reais no mercado”.
+                    Ainda não tem nada por aqui. Pergunte “quanto gastei esse mês?” ou
+                    peça “adiciona um lançamento de 50 reais no mercado”.
                 </flux:text>
             @endforelse
 

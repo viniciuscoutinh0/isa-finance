@@ -2,7 +2,7 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <flux:heading size="xl" level="1">Categorias</flux:heading>
-            <flux:text class="mt-2">Classifique seus lançamentos de entrada e saída.</flux:text>
+            <flux:text class="mt-2">Organize seus lançamentos em categorias, tipo Mercado, Transporte ou Salário.</flux:text>
         </div>
         <flux:button class="w-full shrink-0 sm:w-auto" variant="primary" icon="plus" wire:click="create">Nova categoria</flux:button>
     </div>
@@ -14,7 +14,10 @@
     @endphp
 
     @if ($this->categories->isEmpty())
-        <flux:callout icon="tag">Nenhuma categoria ainda. Crie a primeira.</flux:callout>
+        <flux:callout icon="tag" variant="secondary">
+            <flux:callout.heading>Nenhuma categoria ainda</flux:callout.heading>
+            <flux:callout.text>Crie a primeira para organizar seus lançamentos.</flux:callout.text>
+        </flux:callout>
     @else
         <div class="flex flex-col gap-8">
             @foreach (\App\Enums\CategoryType::cases() as $type)
@@ -35,7 +38,7 @@
                                     wire:click="edit({{ $category->id }})">Editar</flux:button>
                                 <flux:button size="sm" variant="subtle" icon="trash"
                                     wire:click="delete({{ $category->id }})"
-                                    wire:confirm="Excluir a categoria “{{ $category->name }}”?">Excluir</flux:button>
+                                    wire:confirm="Tem certeza que quer excluir a categoria “{{ $category->name }}”? Essa ação não pode ser desfeita.">Excluir</flux:button>
                             </div>
                         </div>
                     @empty

@@ -1,6 +1,6 @@
 <div>
     <flux:heading size="lg">Criar conta</flux:heading>
-    <flux:text class="mt-1">Comece a organizar suas finanças.</flux:text>
+    <flux:text class="mt-1">Vamos organizar sua grana? Leva menos de um minuto.</flux:text>
 
     <form wire:submit="register" class="mt-6 flex flex-col gap-4">
         <flux:input

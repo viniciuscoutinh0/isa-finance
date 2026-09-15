@@ -1,6 +1,6 @@
 <div>
     <flux:heading size="xl" level="1">Painel</flux:heading>
-    <flux:text class="mt-2">Olá, {{ auth()->user()->name }}. Aqui está o resumo das suas contas.</flux:text>
+    <flux:text class="mt-2">Oi, {{ auth()->user()->name }}! Aqui está o resumo das suas finanças.</flux:text>
 
     <flux:separator variant="subtle" class="my-6" />
 
@@ -105,16 +105,18 @@
 
     <flux:heading size="lg" class="mt-8 mb-3">Contas</flux:heading>
     @if ($this->accounts->isEmpty())
-        <flux:callout icon="wallet" class="mb-6">
-            Nenhuma conta ainda.
-            <flux:link :href="route('accounts.index')" wire:navigate>Crie a primeira</flux:link>.
+        <flux:callout icon="wallet" variant="secondary" class="mb-6">
+            <flux:callout.heading>Você ainda não tem nenhuma conta</flux:callout.heading>
+            <flux:callout.text>
+                <flux:link :href="route('accounts.index')" wire:navigate>Crie a primeira</flux:link> — leva menos de um minuto.
+            </flux:callout.text>
         </flux:callout>
     @else
         <div class="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($this->accounts as $account)
                 <flux:card wire:key="account-{{ $account->id }}" class="flex flex-col gap-1">
                     <div class="flex items-center gap-2">
-                        <flux:icon :icon="$account->type->icon()" class="size-4 text-zinc-400" />
+                        <flux:icon :icon="$account->type->icon()" variant="micro" class="text-zinc-400" />
                         <flux:text class="font-medium">{{ $account->name }}</flux:text>
                     </div>
                     <flux:heading size="lg" @class(['text-rose-500 dark:text-rose-400' => $account->balance->isNegative()])>
@@ -131,7 +133,10 @@
     </div>
 
     @if ($this->recentTransactions->isEmpty())
-        <flux:callout icon="banknotes">Nenhum lançamento ainda.</flux:callout>
+        <flux:callout icon="banknotes" variant="secondary">
+            <flux:callout.heading>Nenhum lançamento ainda</flux:callout.heading>
+            <flux:callout.text>Assim que você registrar algo, ele aparece aqui.</flux:callout.text>
+        </flux:callout>
     @else
         <flux:table>
             <flux:table.columns>

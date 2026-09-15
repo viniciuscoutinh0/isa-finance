@@ -17,7 +17,10 @@
     </flux:select>
 
     @if ($this->transfers->isEmpty())
-        <flux:callout icon="arrows-right-left">Nenhuma transferência ainda.</flux:callout>
+        <flux:callout icon="arrows-right-left" variant="secondary">
+            <flux:callout.heading>Nenhuma transferência ainda</flux:callout.heading>
+            <flux:callout.text>Quando você mover dinheiro entre contas, ela aparece aqui.</flux:callout.text>
+        </flux:callout>
     @else
         <flux:table :paginate="$this->transfers">
             <flux:table.columns>
@@ -36,7 +39,7 @@
                         <flux:table.cell>{{ $transfer->fromAccount->name }}</flux:table.cell>
                         <flux:table.cell>
                             <span class="inline-flex items-center gap-1">
-                                <flux:icon icon="arrow-long-right" class="size-4 text-zinc-400" />
+                                <flux:icon icon="arrow-long-right" variant="micro" class="text-zinc-400" />
                                 {{ $transfer->toAccount->name }}
                             </span>
                         </flux:table.cell>
@@ -51,7 +54,7 @@
                                     <flux:menu.item icon="pencil-square" wire:click="edit({{ $transfer->id }})">Editar</flux:menu.item>
                                     <flux:menu.item icon="trash" variant="danger"
                                         wire:click="delete({{ $transfer->id }})"
-                                        wire:confirm="Excluir esta transferência?">Excluir</flux:menu.item>
+                                        wire:confirm="Tem certeza que quer excluir essa transferência? Essa ação não pode ser desfeita.">Excluir</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:table.cell>

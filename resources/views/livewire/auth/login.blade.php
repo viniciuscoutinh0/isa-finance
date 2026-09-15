@@ -1,6 +1,6 @@
 <div>
     <flux:heading size="lg">Entrar</flux:heading>
-    <flux:text class="mt-1">Acesse sua conta.</flux:text>
+    <flux:text class="mt-1">Que bom te ver de novo! Entre na sua conta.</flux:text>
 
     @if (session('status'))
         <flux:callout
@@ -8,7 +8,7 @@
             class="mt-4"
             icon="check-circle"
         >
-            {{ session('status') }}
+            <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
         </flux:callout>
     @endif
 
@@ -61,7 +61,7 @@
     </form>
 
     <flux:text class="mt-6 text-center">
-        Não tem conta?
+        Ainda não tem conta?
         <flux:link
             :href="route('register')"
             wire:navigate

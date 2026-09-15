@@ -3,47 +3,54 @@
 declare(strict_types=1);
 
 use App\Actions\Transactions\CreateTransaction;
-use App\Data\Money;
+use App\Data\Transactions\TransactionData;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\User;
-use Carbon\CarbonImmutable;
+
+beforeEach(function (): void {
+    $this->user = User::factory()->create();
+    $this->account = Account::factory()->ownedBy($this->user)->create();
+    $this->category = Category::factory()->ownedBy($this->user)->expense()->create();
+});
 
 it('creates a transaction linked to the account, category and user', function (): void {
-    $user = User::factory()->create();
-    $account = Account::factory()->ownedBy($user)->create();
-    $category = Category::factory()->ownedBy($user)->expense()->create();
+    $data = TransactionData::fromArray([
+        'accountId' => $this->account->id,
+        'categoryId' => $this->category->id,
+        'date' => '2026-03-15',
+        'description' => 'Mercado do mês',
+        'amount' => '345,90',
+        'notes' => 'compra grande',
+    ]);
 
-    $transaction = app(CreateTransaction::class)->handle(
-        $user,
-        $account,
-        $category,
-        CarbonImmutable::parse('2026-03-15'),
-        'Mercado do mês',
-        Money::parse('345,90'),
-        'compra grande',
-    );
+    $record = app(CreateTransaction::class)->handle($this->user, $data);
 
-    expect($transaction->user_id)->toBe($user->id)
-        ->and($transaction->account_id)->toBe($account->id)
-        ->and($transaction->category_id)->toBe($category->id)
-        ->and($transaction->amount)->toBe(34590)
-        ->and($transaction->date->toDateString())->toBe('2026-03-15')
-        ->and($transaction->notes)->toBe('compra grande');
+    expect($record->user_id)
+        ->toBe($this->user->id)
+        ->and($record->account_id)
+        ->toBe($this->account->id)
+        ->and($record->category_id)
+        ->toBe($this->category->id)
+        ->and($record->amount)
+        ->toBe(34590)
+        ->and($record->date->toDateString())
+        ->toBe('2026-03-15')
+        ->and($record->notes)
+        ->toBe('compra grande');
 });
 
 it('allows a null note', function (): void {
-    $user = User::factory()->create();
+    $data = TransactionData::fromArray([
+        'accountId' => $this->account->id,
+        'categoryId' => $this->category->id,
+        'date' => '2026-03-15',
+        'description' => 'Mercado do mês',
+        'amount' => '345,90',
+        'notes' => null,
+    ]);
 
-    $transaction = app(CreateTransaction::class)->handle(
-        $user,
-        Account::factory()->ownedBy($user)->create(),
-        Category::factory()->ownedBy($user)->income()->create(),
-        CarbonImmutable::now(),
-        'Salário',
-        Money::parse('5.000,00'),
-        null,
-    );
+    $record = app(CreateTransaction::class)->handle($this->user, $data);
 
-    expect($transaction->notes)->toBeNull();
+    expect($record->notes)->toBeNull();
 });

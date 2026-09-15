@@ -1,0 +1,10 @@
+<div>
+    <flux:menu.item
+        type="button"
+        icon="trash"
+        variant="danger"
+        wire:click="delete"
+    >
+        Excluir
+    </flux:menu.item>
+</div>
