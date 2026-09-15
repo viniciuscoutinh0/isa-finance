@@ -29,7 +29,7 @@ final class Update extends Component
     #[On('open-transaction-update')]
     public function onShow(int $id): void
     {
-        $transaction = Transaction::query()->find($id);
+        $transaction = Auth::user()->transactions()->find($id);
 
         if ($transaction === null) {
             return;
@@ -91,10 +91,9 @@ final class Update extends Component
 
             return;
         } catch (Throwable $expection) {
-            dd($expection);
             report($expection);
 
-            Flux::toast('Falha ao criar um lançamento tente novamente.', variant: 'danger');
+            Flux::toast('Falha ao atualizar o lançamento tente novamente.', variant: 'danger');
 
             return;
         }
