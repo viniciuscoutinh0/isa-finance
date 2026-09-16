@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Livewire\Categories\Index;
+use App\Models\Account;
 use App\Models\Category;
+use App\Models\Transaction;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -64,7 +66,7 @@ it('edits an existing category', function (): void {
     $category = Category::factory()->ownedBy($this->user)->expense()->create(['name' => 'Mercado']);
 
     Livewire::test(Index::class)
-        ->call('edit', $category)
+        ->call('edit', $category->id)
         ->assertSet('form.name', 'Mercado')
         ->set('form.name', 'Supermercado')
         ->call('save')
@@ -77,16 +79,38 @@ it('deletes a category', function (): void {
     $category = Category::factory()->ownedBy($this->user)->create();
 
     Livewire::test(Index::class)
-        ->call('delete', $category)
+        ->call('delete', $category->id)
         ->assertHasNoErrors();
 
     $this->assertDatabaseMissing('categories', ['id' => $category->id]);
 });
 
-it('cannot edit a category owned by someone else', function (): void {
-    $category = Category::factory()->create();
+it('refuses to delete a category that has transactions', function (): void {
+    $account = Account::factory()->ownedBy($this->user)->create();
+    $category = Category::factory()->ownedBy($this->user)->expense()->create();
+
+    Transaction::factory()->forAccount($account)->forCategory($category)->create();
 
     Livewire::test(Index::class)
-        ->call('edit', $category)
-        ->assertForbidden();
+        ->call('delete', $category->id)
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('categories', ['id' => $category->id]);
+});
+
+it('does not load a category owned by someone else', function (): void {
+    $category = Category::factory()->create(['name' => 'Alheia']);
+
+    Livewire::test(Index::class)
+        ->call('edit', $category->id)
+        ->assertSet('showModal', false)
+        ->assertSet('form.category', null);
+});
+
+it('keeps a category owned by someone else', function (): void {
+    $category = Category::factory()->create();
+
+    Livewire::test(Index::class)->call('delete', $category->id);
+
+    $this->assertDatabaseHas('categories', ['id' => $category->id]);
 });

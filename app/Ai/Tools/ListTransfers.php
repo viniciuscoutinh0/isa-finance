@@ -15,10 +15,6 @@ use Illuminate\Support\Str;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: the user's transfers between their own accounts. An account name
- * filter matches transfers where it is either the origin or the destination.
- */
 final class ListTransfers implements Tool
 {
     private const MAX_ROWS = 50;

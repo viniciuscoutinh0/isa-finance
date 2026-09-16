@@ -3,9 +3,9 @@
 
 <x-partials.head :title="$title ?? null" />
 
-<x-partials.body class="grid min-h-screen lg:grid-cols-2">
-    <div class="flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-xs">
+<x-partials.body class="grid min-h-dvh lg:grid-cols-2">
+    <div class="flex flex-col items-center justify-center px-6 py-10 sm:py-12">
+        <div class="w-full max-w-sm sm:max-w-xs">
             <div class="mb-8 flex flex-col items-center gap-2 lg:items-start">
                 <flux:icon.banknotes
                     variant="solid"
@@ -23,7 +23,7 @@
             class="pointer-events-none absolute inset-0"
         >
             <div class="absolute -left-24 -top-24 size-96 rounded-full bg-accent/25 blur-3xl"></div>
-            <div class="absolute -bottom-32 -right-16 size-[28rem] rounded-full bg-accent-content/20 blur-3xl"></div>
+            <div class="absolute -bottom-32 -right-16 size-[28rem] rounded-full bg-sky-500/20 blur-3xl"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-zinc-900/40 to-zinc-800"></div>
         </div>
 
@@ -44,7 +44,6 @@
                     Acompanhe contas, lançamentos e transferências com clareza — do saldo total ao último centavo.
                 </p>
 
-                {{-- Product preview mock --}}
                 <div class="mt-8 rounded-xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-sm">
                     <p class="text-sm text-zinc-400">Saldo total</p>
                     <p class="mt-1 text-3xl font-semibold text-white">R$ 12.480,00</p>

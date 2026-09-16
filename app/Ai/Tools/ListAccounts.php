@@ -11,9 +11,6 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: the user's active accounts and their current (derived) balance.
- */
 final class ListAccounts implements Tool
 {
     public function __construct(private readonly User $user) {}

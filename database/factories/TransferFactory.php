@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Transfer>
- *
- * The default state builds a consistent user with two distinct accounts.
  */
 final class TransferFactory extends Factory
 {

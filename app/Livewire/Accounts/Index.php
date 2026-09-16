@@ -5,39 +5,38 @@ declare(strict_types=1);
 namespace App\Livewire\Accounts;
 
 use App\Actions\Accounts\ArchiveAccount;
-use App\Actions\Accounts\CreateAccount;
 use App\Actions\Accounts\DeleteAccount;
 use App\Actions\Accounts\UnarchiveAccount;
-use App\Actions\Accounts\UpdateAccount;
 use App\Data\Accounts\AccountBalanceData;
 use App\Data\Money;
 use App\Enums\AccountType;
 use App\Exceptions\Accounts\AccountHasHistory;
-use App\Livewire\Forms\AccountForm;
 use App\Models\Account;
 use App\Queries\Accounts\AccountsOverviewQuery;
 use Flux\Flux;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('layouts::dashboard')]
 #[Title('Contas')]
 final class Index extends Component
 {
-    public AccountForm $form;
-
-    public bool $showModal = false;
-
-    public bool $showArchived = false;
-
     /**
-     * Account type the tag filter is narrowed to, or null for all types.
+     * @var array<string, mixed>
      */
-    public ?string $filterType = null;
+    #[Url]
+    public array $filters = [
+        'type' => null,
+        'archived' => false,
+    ];
 
     /**
      * @return Collection<int, AccountBalanceData>
@@ -45,12 +44,10 @@ final class Index extends Component
     #[Computed]
     public function accounts(): Collection
     {
-        return app(AccountsOverviewQuery::class)->handle(auth()->user(), $this->showArchived);
+        return app(AccountsOverviewQuery::class)->handle(Auth::user(), (bool) $this->filters['archived']);
     }
 
     /**
-     * Types present among the current accounts, sorted by label — one filter tag each.
-     *
      * @return Collection<int, AccountType>
      */
     #[Computed]
@@ -64,19 +61,19 @@ final class Index extends Component
     }
 
     /**
-     * Accounts left visible after the tag filter is applied.
-     *
      * @return Collection<int, AccountBalanceData>
      */
     #[Computed]
     public function visibleAccounts(): Collection
     {
-        if ($this->filterType === null || $this->filterType === '') {
+        $type = $this->filters['type'] ?? null;
+
+        if ($type === null || $type === '') {
             return $this->accounts;
         }
 
         return $this->accounts
-            ->filter(fn (AccountBalanceData $account): bool => $account->type->value === $this->filterType)
+            ->filter(fn (AccountBalanceData $account): bool => $account->type->value === $type)
             ->values();
     }
 
@@ -90,88 +87,68 @@ final class Index extends Component
         );
     }
 
-    public function create(): void
+    #[On('account::changed')]
+    public function refreshList(): void
     {
-        $this->authorize('create', Account::class);
-
-        $this->form->reset();
-        $this->form->type = AccountType::Checking->value;
-        $this->showModal = true;
+        unset($this->accounts, $this->availableTypes, $this->visibleAccounts, $this->activeTotal);
     }
 
-    public function edit(Account $account): void
+    public function archive(Account $account, ArchiveAccount $action): void
     {
-        $this->authorize('update', $account);
-
-        $this->form->setAccount($account);
-        $this->showModal = true;
-    }
-
-    public function save(CreateAccount $createAccount, UpdateAccount $updateAccount): void
-    {
-        $this->form->validate();
-
-        if ($this->form->accountId === null) {
-            $this->authorize('create', Account::class);
-            $createAccount->handle(
-                auth()->user(),
-                $this->form->name,
-                $this->form->type(),
-                $this->form->initialBalanceMoney(),
-            );
-        } else {
-            $account = auth()->user()->accounts()->findOrFail($this->form->accountId);
-            $this->authorize('update', $account);
-            $updateAccount->handle(
-                $account,
-                $this->form->name,
-                $this->form->type(),
-                $this->form->initialBalanceMoney(),
-            );
+        if (! $this->allows('update', $account)) {
+            return;
         }
 
-        unset($this->accounts);
-        $this->showModal = false;
-        $this->form->reset();
+        $action->handle($account);
 
-        Flux::toast('Conta salva.', variant: 'success');
-    }
-
-    public function archive(Account $account, ArchiveAccount $archiveAccount): void
-    {
-        $this->authorize('update', $account);
-
-        $archiveAccount->handle($account);
-        unset($this->accounts);
+        $this->refreshList();
 
         Flux::toast('Conta arquivada.', variant: 'success');
     }
 
-    public function unarchive(Account $account, UnarchiveAccount $unarchiveAccount): void
+    public function unarchive(Account $account, UnarchiveAccount $action): void
     {
-        $this->authorize('update', $account);
+        if (! $this->allows('update', $account)) {
+            return;
+        }
 
-        $unarchiveAccount->handle($account);
-        unset($this->accounts);
+        $action->handle($account);
+
+        $this->refreshList();
 
         Flux::toast('Conta reativada.', variant: 'success');
     }
 
-    public function delete(Account $account, DeleteAccount $deleteAccount): void
+    public function delete(Account $account, DeleteAccount $action): void
     {
-        $this->authorize('delete', $account);
+        if (! $this->allows('delete', $account)) {
+            return;
+        }
 
         try {
-            $deleteAccount->handle($account);
+            $action->handle($account);
         } catch (AccountHasHistory) {
             Flux::toast('Esta conta tem lançamentos. Arquive-a em vez de excluir.', variant: 'danger');
 
             return;
         }
 
-        unset($this->accounts);
+        $this->refreshList();
 
         Flux::toast('Conta excluída.', variant: 'success');
+    }
+
+    private function allows(string $ability, Account $account): bool
+    {
+        try {
+            $this->authorize($ability, $account);
+        } catch (AuthorizationException) {
+            Flux::toast('Você não tem permissão para isso.', variant: 'danger');
+
+            return false;
+        }
+
+        return true;
     }
 
     public function render(): View

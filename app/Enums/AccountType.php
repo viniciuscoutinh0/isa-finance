@@ -7,13 +7,13 @@ namespace App\Enums;
 enum AccountType: string
 {
     case Checking = 'checking';
+
     case Savings = 'savings';
+
     case Cash = 'cash';
+
     case CreditCard = 'credit_card';
 
-    /**
-     * pt-BR label shown to the user.
-     */
     public function label(): string
     {
         return match ($this) {
@@ -24,9 +24,6 @@ enum AccountType: string
         };
     }
 
-    /**
-     * Heroicon name for this account type.
-     */
     public function icon(): string
     {
         return match ($this) {

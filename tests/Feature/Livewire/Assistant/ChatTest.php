@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Ai\Agents\Assistant;
+use App\Ai\Tools\CreateTransactionTool;
 use App\Livewire\Assistant\Chat;
 use App\Models\Account;
 use App\Models\Category;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Ai\Approvals\PendingApproval;
 use Laravel\Ai\Responses\AgentResponse;
 use Laravel\Ai\Responses\Data\ToolCall;
+use Laravel\Ai\Tools\Request;
 use Livewire\Livewire;
 
 beforeEach(function (): void {
@@ -125,6 +127,22 @@ it('submits the approval decision and resumes the reply once the form is confirm
         ->assertSet('showApproval', false)
         ->assertSet('awaitingReply', false)
         ->assertSee('Pronto, lançamento registrado.');
+
+    expect((new CreateTransactionTool($this->user))->handle(new Request([
+        'amount' => '150,00',
+        'description' => 'Feira',
+        'date' => '2026-03-10',
+        'account_id' => $account->id,
+        'category_id' => $category->id,
+    ])))->toContain('Feira');
+
+    $this->assertDatabaseHas('transactions', [
+        'user_id' => $this->user->id,
+        'account_id' => $account->id,
+        'category_id' => $category->id,
+        'description' => 'Feira',
+        'amount' => 15000,
+    ]);
 });
 
 it('validates the approval form before submitting a decision', function (): void {

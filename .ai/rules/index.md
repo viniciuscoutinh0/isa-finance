@@ -32,8 +32,10 @@ The structure the rules assume — these directories exist (kept by `.gitkeep`);
 | `app/Enums/` | Backed enums (status, role, type) |
 | `app/Exceptions/<Domain>/` | Domain exception base + cases |
 | `app/Policies/` | One policy per model |
-| `app/Rules/` | Reusable validation rule objects |
+| `app/Rules/` | `Rule` objects, plus one ruleset class per domain shared by every boundary |
 | `app/Http/Requests/` | Form Requests (controller boundary) |
+| `app/Livewire/<Domain>/` | `Index`, `Create`, `Update` — see `.ai/rules/livewire.md` |
+| `app/Livewire/Concerns/` | Traits sharing computed options between components |
 | `app/Livewire/Forms/` | Livewire Form objects |
 | `app/Jobs/` | Queued wrappers around Actions |
 | `tests/Feature/{Actions,Queries,Services,Livewire,Policies,Jobs,Console}/` | Mirrors the class paths above |

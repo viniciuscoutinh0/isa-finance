@@ -19,6 +19,7 @@ paths:
 
 **Model content**
 - Model holds schema concerns only: relationships (typed return, e.g. `: BelongsTo`), `casts()` method, accessors/mutators, small reusable scopes. No business logic (that is an Action), no non-trivial reads (that is a Query).
+- Every user-owned model gets `scopeOwnedBy(Builder $query, User $user)` — take the `User`, not an id, so the signature cannot be handed a null `Auth::id()`. The name matches the factory state (`->ownedBy($user)`).
 - Enum-backed columns cast to an Enum in `casts()`; dates are `CarbonImmutable` (`ImmutableDates` is on) — `$model->created_at->addDay()` returns a new instance, it never mutates.
 - Every model gets a factory; named states for meaningful variations.
 

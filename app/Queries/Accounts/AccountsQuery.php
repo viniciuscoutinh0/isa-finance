@@ -11,9 +11,6 @@ use Illuminate\Support\Collection;
 final readonly class AccountsQuery
 {
     /**
-     * The user's accounts, ordered by name. Archived accounts are excluded
-     * unless $includeArchived is set.
-     *
      * @return Collection<int, Account>
      */
     public function handle(User $user, bool $includeArchived = false): Collection

@@ -12,9 +12,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Transaction>
- *
- * The default state builds a consistent user + account + category trio.
- * Use forAccount()/forCategory() to pin them; both also align user_id.
  */
 final class TransactionFactory extends Factory
 {

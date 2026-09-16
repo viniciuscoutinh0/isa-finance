@@ -12,8 +12,7 @@ return new class extends Migration
     {
         Schema::create('transfers', function (Blueprint $table): void {
             $table->id();
-            // Only user_id cascades (SQL Server rejects multiple cascade paths);
-            // account deletion is guarded in DeleteAccount.
+
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('from_account_id')->constrained('accounts');
             $table->foreignId('to_account_id')->constrained('accounts');

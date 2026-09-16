@@ -11,9 +11,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 final readonly class TransfersQuery
 {
     /**
-     * The user's transfers, newest first, eager-loaded with both accounts.
-     * An account filter matches transfers where it is either side.
-     *
      * @param  array{account_id?: int|null, from?: string|null, to?: string|null}  $filters
      * @return LengthAwarePaginator<int, Transfer>
      */

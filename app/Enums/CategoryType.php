@@ -7,11 +7,9 @@ namespace App\Enums;
 enum CategoryType: string
 {
     case Income = 'income';
+
     case Expense = 'expense';
 
-    /**
-     * pt-BR label shown to the user.
-     */
     public function label(): string
     {
         return match ($this) {
@@ -20,9 +18,6 @@ enum CategoryType: string
         };
     }
 
-    /**
-     * Flux badge / accent color for this type.
-     */
     public function color(): string
     {
         return match ($this) {
@@ -31,9 +26,6 @@ enum CategoryType: string
         };
     }
 
-    /**
-     * Sign applied to a Transaction amount of this type when summing a balance.
-     */
     public function sign(): int
     {
         return match ($this) {

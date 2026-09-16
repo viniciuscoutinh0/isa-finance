@@ -18,7 +18,6 @@ it('computes a single account balance', function (): void {
     Transaction::factory()->forAccount($account)->forCategory($income)->amountCents(250_00)->create();
     Transaction::factory()->forAccount($account)->forCategory($expense)->amountCents(400_00)->create();
 
-    // 1000 + 250 - 400 = 850
     expect(app(AccountBalanceQuery::class)->handle($account)->cents)->toBe(850_00);
 });
 
@@ -36,6 +35,5 @@ it('applies transfers in and out', function (): void {
     Transfer::factory()->between($account, $other)->amountCents(200_00)->create();
     Transfer::factory()->between($other, $account)->amountCents(50_00)->create();
 
-    // 500 - 200 + 50 = 350
     expect(app(AccountBalanceQuery::class)->handle($account)->cents)->toBe(350_00);
 });

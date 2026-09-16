@@ -10,9 +10,6 @@ use App\Models\Account;
 final readonly class DeleteAccount
 {
     /**
-     * Hard delete. An account referenced by any transaction or transfer is
-     * refused with AccountHasHistory; the user archives it instead.
-     *
      * @throws AccountHasHistory
      */
     public function handle(Account $account): void

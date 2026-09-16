@@ -22,9 +22,6 @@ final class LoginForm extends Form
     #[Validate('boolean')]
     public bool $remember = false;
 
-    /**
-     * Authenticate the credentials, throttled to 5 attempts per e-mail + IP.
-     */
     public function authenticate(): void
     {
         $this->validate();

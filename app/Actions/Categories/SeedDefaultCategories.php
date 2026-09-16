@@ -11,9 +11,6 @@ use App\Models\User;
 final readonly class SeedDefaultCategories
 {
     /**
-     * The starter set every user gets on registration. They can rename,
-     * add or delete freely afterwards.
-     *
      * @var array<value-of<CategoryType>, list<string>>
      */
     private const DEFAULTS = [

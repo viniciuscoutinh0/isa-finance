@@ -42,10 +42,22 @@ Create with `php artisan make:class Services/<Vendor>/<Name>` / `make:class Quer
 
 ## Validation at the boundary, authorization in Policies
 **Validation — at the entry point, never inside an Action**
-- Livewire: a Form object with `#[Validate]` (see the Livewire rule); call `$this->form->validate()` before handing data to the Action.
+- Livewire: a Form object (see the Livewire rule); call `$this->form->validate()` before handing data to the Action.
 - Controllers/HTTP: a Form Request in `app/Http/Requests/`, one per use case (`StoreOrderRequest`). No inline `$request->validate()` once there is more than a field or two, and never `Validator::make()` by hand.
-- Actions receive already-valid input (typed params or a DTO). They still enforce *domain* invariants — state machine, stock, balance — by throwing a domain exception, not by returning `false`.
-- Rules that hit the database (`exists`, `unique`) stay in the Form Request/Form object. Shared rule sets go in a custom `Rule` object in `app/Rules/`, not copy-pasted.
+- Actions receive a DTO from `app/Data/<Domain>/`, never a list of positional arguments. Six positional params is how a caller silently passes the wrong account.
+- Actions still enforce *domain* invariants — state machine, stock, balance, ownership of every referenced record — by throwing a domain exception, not by returning `false`. A check that lives only in the Form object protects the form, not the Action.
+
+**One ruleset per domain, shared by every boundary**
+- The rules live in `app/Rules/<Domain>/<X>Rules.php`: `final class`, static methods, no state. `for(User $user): array` and `attributes(): array`, plus `messages()` when a rule needs custom wording.
+- Take the `User` as a parameter; never read `Auth::id()` inside the ruleset. A tool running in a queue has no session, and every `exists`/`unique` check would silently fail.
+- A `Rule` object in `app/Rules/` (like `MoneyString`) is one *rule*; a ruleset class is the whole *payload*. Both exist, they are not alternatives.
+- A **Form Request cannot be that shared place**: `Illuminate\Foundation\Http\FormRequest` depends on the HTTP resolution cycle, and neither `Livewire\Form` nor `Laravel\Ai\Tools\Request` is an HTTP request. Resolving a Form object from the container fails for the same reason — `Livewire\Form::__construct()` requires a `Component` and the property name.
+- Rules that hit the database (`exists`, `unique`) belong in the ruleset, so every boundary gets them.
+
+**Changing a contract means sweeping the callers**
+- An Action signature, a ruleset key or a filter key is a contract. Before changing one, grep for every caller — `app/Livewire/`, `app/Ai/Tools/`, `app/Console/`, `app/Jobs/` — and change them in the same commit.
+- `app/Ai/Tools/` is the caller most often forgotten, and its failures are silent: the tool returns a sentence, not an exception.
+- `app/Ai/` must never import from `app/Livewire/`. If both need the same thing, it belongs in `app/Rules/` or `app/Data/`.
 - Because models are unguarded (Essentials), validated data is the *only* thing that may reach `create()`/`update()`. See `.ai/rules/models.md`.
 
 **Authorization — Policies, checked at every entry point**

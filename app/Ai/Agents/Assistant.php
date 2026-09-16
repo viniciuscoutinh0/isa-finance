@@ -23,14 +23,6 @@ use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;
 
-/**
- * The in-app finance assistant. Grounded in the signed-in user's own data
- * through read tools, and able to record transactions and transfers through
- * approval-gated write tools whose account/category is picked on screen.
- *
- * Instructions are written in English (developer-facing config); the model is
- * told to always answer the user in pt-BR.
- */
 #[MaxSteps(8)]
 #[MaxTokens(2048)]
 final class Assistant implements Agent, Conversational, HasTools

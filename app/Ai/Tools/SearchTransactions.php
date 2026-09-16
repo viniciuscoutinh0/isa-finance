@@ -17,21 +17,21 @@ use Illuminate\Support\Str;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: search the user's transactions by account, category, type, date
- * range or description text. Account and category are matched by name; an
- * unmatched name is reported and its filter is dropped rather than failing.
- */
 final class SearchTransactions implements Tool
 {
     private const MAX_ROWS = 50;
 
-    public function __construct(private readonly User $user) {}
+    public function __construct(
+        private readonly User $user,
+    ) {}
 
     public function description(): string
     {
-        return 'Search the current user\'s transactions (lançamentos). All filters are optional and combine with AND. '
-            .'Returns up to '.self::MAX_ROWS.' rows, newest first, plus the total match count and the total of the returned rows.';
+        return
+            'Search the current user\'s transactions (lançamentos). All filters are optional and combine with AND. '
+            .'Returns up to '
+            .self::MAX_ROWS
+            .' rows, newest first, plus the total match count and the total of the returned rows.';
     }
 
     public function handle(Request $request): string
@@ -43,9 +43,9 @@ final class SearchTransactions implements Tool
         $type = $this->resolveType($request->string('type')->toString(), $notes);
 
         $filters = [
-            'account_id' => $accountId,
-            'category_id' => $categoryId,
-            'type' => $type,
+            'accounts' => array_filter([$accountId]),
+            'categories' => array_filter([$categoryId]),
+            'types' => array_filter([$type?->value]),
             'from' => $this->cleanDate($request->string('from')->toString()),
             'to' => $this->cleanDate($request->string('to')->toString()),
             'search' => $request->string('search')->toString() ?: null,
@@ -53,7 +53,6 @@ final class SearchTransactions implements Tool
 
         $results = app(TransactionsQuery::class)->handle($this->user, $filters, self::MAX_ROWS);
 
-        /** @var array<int, Transaction> $rows */
         $rows = $results->items();
         $shownTotalCents = array_sum(array_map(static fn (Transaction $t): int => $t->amount, $rows));
 
@@ -83,7 +82,9 @@ final class SearchTransactions implements Tool
         return [
             'account' => $schema->string()->description('Account name to filter by. Optional.'),
             'category' => $schema->string()->description('Category name to filter by. Optional.'),
-            'type' => $schema->string()->enum(['income', 'expense'])
+            'type' => $schema
+                ->string()
+                ->enum(['income', 'expense'])
                 ->description('income = entrada, expense = saída. Optional.'),
             'from' => $schema->string()->description('Start date (inclusive) as YYYY-MM-DD. Optional.'),
             'to' => $schema->string()->description('End date (inclusive) as YYYY-MM-DD. Optional.'),
@@ -100,7 +101,8 @@ final class SearchTransactions implements Tool
             return null;
         }
 
-        $account = app(AccountsQuery::class)->handle($this->user, includeArchived: true)
+        $account = app(AccountsQuery::class)
+            ->handle($this->user, includeArchived: true)
             ->first(fn ($account): bool => Str::lower($account->name) === Str::lower($name));
 
         if ($account === null) {
@@ -121,7 +123,8 @@ final class SearchTransactions implements Tool
             return null;
         }
 
-        $category = app(CategoriesQuery::class)->handle($this->user)
+        $category = app(CategoriesQuery::class)
+            ->handle($this->user)
             ->first(fn ($category): bool => Str::lower($category->name) === Str::lower($name));
 
         if ($category === null) {

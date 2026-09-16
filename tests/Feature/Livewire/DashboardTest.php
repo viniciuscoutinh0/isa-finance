@@ -29,8 +29,8 @@ it('shows each account balance and the grand total', function (): void {
 
     Livewire::test(Dashboard::class)
         ->assertSee('Nubank')
-        ->assertSee('R$ 500,00')  // Nubank: 100 + 400
-        ->assertSee('R$ 550,00'); // total: 500 + 50
+        ->assertSee('R$ 500,00')
+        ->assertSee('R$ 550,00');
 });
 
 it('excludes archived accounts from the total', function (): void {
@@ -64,7 +64,7 @@ it('shows the current month income, expense and net in the metrics grid', functi
         ->assertSee('Saídas no mês')
         ->assertSee('R$ 200,00')
         ->assertSee('Setembro de 2026')
-        ->assertSee('R$ 300,00'); // net result
+        ->assertSee('R$ 300,00');
 });
 
 it('lists the most recent transactions', function (): void {

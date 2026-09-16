@@ -3,11 +3,11 @@
 
 <x-partials.head :title="$title ?? null" />
 
-<x-partials.body class="bg-zinc-100 dark:bg-zinc-900">
+<x-partials.body>
     <flux:sidebar
         sticky
         collapsible="mobile"
-        class="bg-transparent"
+        class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 md:border-0 md:bg-transparent"
     >
         <flux:sidebar.header>
             <flux:sidebar.brand
@@ -118,9 +118,9 @@
     </flux:header>
 
     <flux:main
-        class="m-2 md:rounded-xl md:border md:border-zinc-200 md:bg-white md:shadow-sm lg:my-3 lg:me-3 lg:ms-0 md:dark:border-zinc-700 md:dark:bg-zinc-800"
+        class="m-0 md:m-2 md:rounded-xl md:border md:border-zinc-200 md:bg-white md:shadow-sm lg:my-3 lg:me-3 lg:ms-0 md:dark:border-zinc-700 md:dark:bg-zinc-800"
     >
-        <div class="mx-auto w-full max-w-5xl pb-24 lg:pb-0">
+        <div class="mx-auto w-full max-w-5xl pb-[calc(3.5rem+env(safe-area-inset-bottom)+1rem)] lg:pb-0">
             {{ $slot }}
         </div>
     </flux:main>
@@ -130,8 +130,6 @@
     @persist('assistant')
         <livewire:assistant.chat />
     @endpersist
-
-    <flux:toast />
 </x-partials.body>
 
 </html>

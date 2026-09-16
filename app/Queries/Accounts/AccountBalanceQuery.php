@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class AccountBalanceQuery
 {
-    /**
-     * Derived balance of a single account (ADR 0003): initial balance, plus
-     * income minus expense transactions, minus transfers out plus transfers in.
-     */
     public function handle(Account $account): Money
     {
         $cents = DB::table('accounts')

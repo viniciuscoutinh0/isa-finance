@@ -17,17 +17,18 @@ final class ForgotPassword extends Component
 {
     public ForgotPasswordForm $form;
 
-    public ?string $status = null;
-
     public function sendResetLink(): void
     {
         $this->form->validate();
 
-        $status = Password::sendResetLink(['email' => $this->form->email]);
+        $status = Password::sendResetLink([
+            'email' => $this->form->email,
+        ]);
 
         if ($status === Password::RESET_LINK_SENT) {
             $this->form->reset();
-            $this->status = __($status);
+
+            session()->flash('status', __($status));
 
             return;
         }

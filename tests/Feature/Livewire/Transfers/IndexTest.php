@@ -8,95 +8,89 @@ use App\Models\Transfer;
 use App\Models\User;
 use Livewire\Livewire;
 
+use function Pest\Laravel\actingAs;
+
 beforeEach(function (): void {
     $this->user = User::factory()->create();
-    $this->actingAs($this->user);
-    $this->from = Account::factory()->ownedBy($this->user)->create(['name' => 'Nubank']);
-    $this->to = Account::factory()->ownedBy($this->user)->create(['name' => 'Carteira']);
+
+    actingAs($this->user);
+
+    $this->nubank = Account::factory()
+        ->ownedBy($this->user)
+        ->create(['name' => 'Nubank']);
+
+    $this->itau = Account::factory()
+        ->ownedBy($this->user)
+        ->create(['name' => 'Itaú']);
+});
+
+it('renders successfully', function (): void {
+    Livewire::test(Index::class)->assertStatus(200);
 });
 
 it('lists only the current user transfers', function (): void {
-    Transfer::factory()->between($this->from, $this->to)->create(['notes' => 'Meu saque']);
-    Transfer::factory()->create(['notes' => 'Saque alheio']);
+    Transfer::factory()
+        ->between($this->nubank, $this->itau)
+        ->create(['notes' => 'Minha transferência']);
+
+    Transfer::factory()->create(['notes' => 'Transferência alheia']);
 
     Livewire::test(Index::class)
-        ->assertSee('Meu saque')
-        ->assertDontSee('Saque alheio');
+        ->assertSee('Minha transferência')
+        ->assertDontSee('Transferência alheia');
 });
 
-it('creates a transfer through the modal', function (): void {
-    Livewire::test(Index::class)
-        ->call('create')
-        ->assertSet('showModal', true)
-        ->set('form.fromAccountId', (string) $this->from->id)
-        ->set('form.toAccountId', (string) $this->to->id)
-        ->set('form.date', '2026-03-10')
-        ->set('form.amount', '200,00')
-        ->call('save')
-        ->assertHasNoErrors()
-        ->assertSet('showModal', false);
+it('filters by an account on either side of the transfer', function (): void {
+    $caixa = Account::factory()->ownedBy($this->user)->create(['name' => 'Caixa']);
 
-    $this->assertDatabaseHas('transfers', [
-        'user_id' => $this->user->id,
-        'from_account_id' => $this->from->id,
-        'to_account_id' => $this->to->id,
-        'amount' => 20000,
-    ]);
+    Transfer::factory()->between($this->nubank, $this->itau)->create(['notes' => 'Nubank para Itaú']);
+    Transfer::factory()->between($this->itau, $this->nubank)->create(['notes' => 'Itaú para Nubank']);
+    Transfer::factory()->between($this->itau, $caixa)->create(['notes' => 'Fora do filtro']);
+
+    Livewire::test(Index::class)
+        ->set('filters.account_id', $this->nubank->id)
+        ->assertSee('Nubank para Itaú')
+        ->assertSee('Itaú para Nubank')
+        ->assertDontSee('Fora do filtro');
 });
 
-it('rejects a transfer to the same account', function (): void {
-    Livewire::test(Index::class)
-        ->call('create')
-        ->set('form.fromAccountId', (string) $this->from->id)
-        ->set('form.toAccountId', (string) $this->from->id)
-        ->set('form.date', '2026-03-10')
-        ->set('form.amount', '200,00')
-        ->call('save')
-        ->assertHasErrors('form.toAccountId');
+it('goes back to the first page when a filter changes', function (): void {
+    Transfer::factory()->count(30)->between($this->nubank, $this->itau)->create();
 
-    $this->assertDatabaseCount('transfers', 0);
+    Livewire::test(Index::class)
+        ->set('paginators.page', 2)
+        ->set('filters.account_id', $this->nubank->id)
+        ->assertSet('paginators.page', 1);
 });
 
-it('rejects an account owned by someone else', function (): void {
-    $foreign = Account::factory()->create();
+it('refreshes the list when a sibling component writes a transfer', function (): void {
+    $component = Livewire::test(Index::class)->assertDontSee('Recém criada');
 
-    Livewire::test(Index::class)
-        ->call('create')
-        ->set('form.fromAccountId', (string) $this->from->id)
-        ->set('form.toAccountId', (string) $foreign->id)
-        ->set('form.date', '2026-03-10')
-        ->set('form.amount', '50,00')
-        ->call('save')
-        ->assertHasErrors('form.toAccountId');
-});
+    Transfer::factory()
+        ->between($this->nubank, $this->itau)
+        ->create(['notes' => 'Recém criada']);
 
-it('edits a transfer', function (): void {
-    $transfer = Transfer::factory()->between($this->from, $this->to)->amountCents(10000)->create();
-
-    Livewire::test(Index::class)
-        ->call('edit', $transfer)
-        ->assertSet('form.amount', '100,00')
-        ->set('form.amount', '123,45')
-        ->call('save')
-        ->assertHasNoErrors();
-
-    expect($transfer->fresh()->amount)->toBe(12345);
+    $component->dispatch('transfer::changed')->assertSee('Recém criada');
 });
 
 it('deletes a transfer', function (): void {
-    $transfer = Transfer::factory()->between($this->from, $this->to)->create();
+    $transfer = Transfer::factory()
+        ->between($this->nubank, $this->itau)
+        ->create(['notes' => 'Some daqui']);
 
     Livewire::test(Index::class)
-        ->call('delete', $transfer)
-        ->assertHasNoErrors();
+        ->assertSee('Some daqui')
+        ->call('delete', $transfer->id)
+        ->assertHasNoErrors()
+        ->assertDontSee('Some daqui');
 
     $this->assertDatabaseMissing('transfers', ['id' => $transfer->id]);
 });
 
-it('cannot edit a transfer owned by someone else', function (): void {
+it('keeps a transfer owned by someone else', function (): void {
     $transfer = Transfer::factory()->create();
 
-    Livewire::test(Index::class)
-        ->call('edit', $transfer)
-        ->assertForbidden();
+    Livewire::test(Index::class)->call('delete', $transfer->id);
+
+    $this->assertDatabaseHas('transfers', ['id' => $transfer->id]);
 });

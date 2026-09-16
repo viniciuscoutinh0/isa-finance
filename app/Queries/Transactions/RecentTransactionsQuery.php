@@ -11,9 +11,6 @@ use Illuminate\Support\Collection;
 final readonly class RecentTransactionsQuery
 {
     /**
-     * The user's most recent transactions across all accounts, newest first,
-     * eager-loaded with account and category.
-     *
      * @return Collection<int, Transaction>
      */
     public function handle(User $user, int $limit = 10): Collection

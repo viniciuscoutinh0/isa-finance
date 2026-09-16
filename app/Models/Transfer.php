@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\TransferFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,15 @@ final class Transfer extends Model
     public function toAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'to_account_id');
+    }
+
+    /**
+     * @param  Builder<Transfer>  $query
+     * @return Builder<Transfer>
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        return $query->where('user_id', $user->id);
     }
 
     /**

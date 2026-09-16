@@ -14,11 +14,6 @@ final class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Idempotent: a single demo user with the default category set, so a
-     * fresh `migrate --seed` gives a working login. Rich demo data belongs
-     * in its own seeder.
-     */
     public function run(): void
     {
         $user = User::firstOrCreate(

@@ -3,12 +3,12 @@
         name="assistant"
         flyout
         :dismissible="!$awaitingReply && !$showApproval"
-        class="flex h-full flex-col md:w-[28rem]"
+        class="flex h-full w-full flex-col md:w-112"
         variant="floating"
     >
         <div>
             <flux:heading size="lg">Assistente</flux:heading>
-            <flux:text size="sm">Pergunte sobre suas contas e lançamentos.</flux:text>
+            <flux:text size="sm">Pergunte sobre suas contas e lançamentos, ou peça para eu registrar algo por você.</flux:text>
         </div>
 
         <flux:separator
@@ -16,7 +16,6 @@
             class="my-4"
         />
 
-        {{-- Transcript --}}
         @php($me = auth()->user())
         <div
             class="scroll-fade flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pe-1"
@@ -74,12 +73,11 @@
                     size="sm"
                     class="m-auto text-center"
                 >
-                    Nenhuma mensagem ainda. Experimente “quanto gastei este mês?” ou
-                    “adiciona um lançamento de 50 reais no mercado”.
+                    Ainda não tem nada por aqui. Pergunte “quanto gastei esse mês?” ou
+                    peça “adiciona um lançamento de 50 reais no mercado”.
                 </flux:text>
             @endforelse
 
-            {{-- Live streamed reply --}}
             @if ($awaitingReply)
                 <div class="motion-safe:animate-chat-pop flex items-start gap-2">
                     <flux:avatar
@@ -108,7 +106,6 @@
             @endif
         </div>
 
-        {{-- Approval form: shown when a write tool is waiting for confirmation --}}
         @if ($showApproval)
             <flux:separator
                 variant="subtle"
@@ -206,7 +203,6 @@
             </form>
         @endif
 
-        {{-- Composer --}}
         <flux:separator
             variant="subtle"
             class="my-4"

@@ -15,13 +15,6 @@ use Illuminate\Support\Collection;
 final readonly class MonthlyCashFlowQuery
 {
     /**
-     * Income and expense totals per calendar month for the last $months months
-     * (current month last), zero-filled for months with no activity.
-     *
-     * Rows are grouped in PHP rather than SQL so the same code runs on sqlsrv
-     * and sqlite — no driver-specific date functions (see .ai/rules/database.md).
-     * The window is a handful of months, so the row count stays small.
-     *
      * @return Collection<int, MonthlyCashFlowData>
      */
     public function handle(User $user, int $months = 6): Collection
