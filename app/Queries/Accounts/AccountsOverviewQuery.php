@@ -12,12 +12,6 @@ use Illuminate\Support\Facades\DB;
 final readonly class AccountsOverviewQuery
 {
     /**
-     * Every account of the user with its derived balance (ADR 0003):
-     * initial balance, plus income minus expense transactions, minus
-     * transfers out plus transfers in. Correlated subqueries keep each
-     * account's rows from fanning out. Archived accounts are excluded
-     * unless asked for.
-     *
      * @return Collection<int, AccountBalanceData>
      */
     public function handle(User $user, bool $includeArchived = false): Collection

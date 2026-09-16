@@ -118,9 +118,9 @@
     </flux:header>
 
     <flux:main
-        class="m-2 md:rounded-xl md:border md:border-zinc-200 md:bg-white md:shadow-sm lg:my-3 lg:me-3 lg:ms-0 md:dark:border-zinc-700 md:dark:bg-zinc-800"
+        class="m-0 md:m-2 md:rounded-xl md:border md:border-zinc-200 md:bg-white md:shadow-sm lg:my-3 lg:me-3 lg:ms-0 md:dark:border-zinc-700 md:dark:bg-zinc-800"
     >
-        <div class="mx-auto w-full max-w-5xl pb-24 lg:pb-0">
+        <div class="mx-auto w-full max-w-5xl pb-[calc(3.5rem+env(safe-area-inset-bottom)+1rem)] lg:pb-0">
             {{ $slot }}
         </div>
     </flux:main>
@@ -130,8 +130,6 @@
     @persist('assistant')
         <livewire:assistant.chat />
     @endpersist
-
-
 </x-partials.body>
 
 </html>

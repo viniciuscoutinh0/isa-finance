@@ -7,10 +7,6 @@ namespace App\Data\Accounts;
 use App\Data\Money;
 use App\Enums\AccountType;
 
-/**
- * An account plus its derived balance, as produced by AccountsOverviewQuery.
- * The balance is computed (ADR 0003), never stored.
- */
 final readonly class AccountBalanceData
 {
     public function __construct(

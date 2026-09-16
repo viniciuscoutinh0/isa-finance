@@ -12,10 +12,6 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: income vs. expense totals per calendar month, current month last.
- * Use this for "how much did I earn / spend in month X" questions.
- */
 final class MonthlyCashFlow implements Tool
 {
     public function __construct(private readonly User $user) {}

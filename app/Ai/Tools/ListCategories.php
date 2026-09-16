@@ -11,9 +11,6 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: the user's categories, each with its type (entrada/saída).
- */
 final class ListCategories implements Tool
 {
     public function __construct(private readonly User $user) {}

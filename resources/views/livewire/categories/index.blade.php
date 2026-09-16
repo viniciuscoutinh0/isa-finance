@@ -19,7 +19,7 @@
             <flux:callout.text>Crie a primeira para organizar seus lançamentos.</flux:callout.text>
         </flux:callout>
     @else
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-6 sm:gap-8">
             @foreach (\App\Enums\CategoryType::cases() as $type)
                 <div>
                     <flux:heading size="lg" class="mb-3 flex items-center gap-2">
@@ -34,11 +34,11 @@
                             class="flex items-center justify-between gap-2 border-b border-zinc-200 py-2 last:border-0 dark:border-zinc-700">
                             <flux:text class="min-w-0 truncate font-medium">{{ $category->name }}</flux:text>
                             <div class="flex shrink-0 items-center gap-1">
-                                <flux:button size="sm" variant="subtle" icon="pencil-square"
-                                    wire:click="edit({{ $category->id }})">Editar</flux:button>
-                                <flux:button size="sm" variant="subtle" icon="trash"
+                                <flux:button size="sm" variant="subtle" icon="pencil-square" aria-label="Editar categoria"
+                                    wire:click="edit({{ $category->id }})"><span class="max-sm:hidden">Editar</span></flux:button>
+                                <flux:button size="sm" variant="subtle" icon="trash" aria-label="Excluir categoria"
                                     wire:click="delete({{ $category->id }})"
-                                    wire:confirm="Tem certeza que quer excluir a categoria “{{ $category->name }}”? Essa ação não pode ser desfeita.">Excluir</flux:button>
+                                    wire:confirm="Tem certeza que quer excluir a categoria “{{ $category->name }}”? Essa ação não pode ser desfeita."><span class="max-sm:hidden">Excluir</span></flux:button>
                             </div>
                         </div>
                     @empty
@@ -49,7 +49,7 @@
         </div>
     @endif
 
-    <flux:modal wire:model.self="showModal" class="md:w-96">
+    <flux:modal wire:model.self="showModal" class="w-full md:w-96">
         <form wire:submit="save" class="flex flex-col gap-6">
             <flux:heading size="lg">
                 {{ $form->category ? 'Editar categoria' : 'Nova categoria' }}

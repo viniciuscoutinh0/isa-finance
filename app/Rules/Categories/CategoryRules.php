@@ -8,12 +8,6 @@ use App\Enums\CategoryType;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 
-/**
- * Validation rules for a category payload.
- *
- * A name is unique per user and type, so the rule needs the type being
- * submitted, and the category being edited to exclude itself.
- */
 final class CategoryRules
 {
     /**

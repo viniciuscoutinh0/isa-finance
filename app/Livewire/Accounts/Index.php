@@ -48,8 +48,6 @@ final class Index extends Component
     }
 
     /**
-     * Types present among the current accounts, sorted by label — one filter tag each.
-     *
      * @return Collection<int, AccountType>
      */
     #[Computed]
@@ -63,8 +61,6 @@ final class Index extends Component
     }
 
     /**
-     * Accounts left visible after the tag filter is applied.
-     *
      * @return Collection<int, AccountBalanceData>
      */
     #[Computed]
@@ -81,9 +77,6 @@ final class Index extends Component
             ->values();
     }
 
-    /**
-     * The total never narrows with the tag filter: it answers "how much do I have".
-     */
     #[Computed]
     public function activeTotal(): Money
     {
@@ -94,9 +87,6 @@ final class Index extends Component
         );
     }
 
-    /**
-     * Drop the memoized overview after a sibling component writes an account.
-     */
     #[On('account::changed')]
     public function refreshList(): void
     {

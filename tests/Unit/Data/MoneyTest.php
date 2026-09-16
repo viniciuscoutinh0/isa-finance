@@ -59,5 +59,5 @@ it('reports sign and adds and subtracts producing new instances', function () {
         ->and($a->subtract($b)->cents)->toBe(750)
         ->and($a->subtract(Money::fromCents(3000))->isNegative())->toBeTrue()
         ->and(Money::fromCents(0)->isZero())->toBeTrue()
-        ->and($a->cents)->toBe(1000); // unchanged
+        ->and($a->cents)->toBe(1000);
 });

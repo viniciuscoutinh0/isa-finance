@@ -1,5 +1,5 @@
 <flux:modal
-    class="md:w-[28rem]"
+    class="w-full md:w-112"
     name="transfer-update"
     flyout
     variant="floating"

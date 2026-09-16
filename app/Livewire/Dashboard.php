@@ -49,8 +49,6 @@ final class Dashboard extends Component
     }
 
     /**
-     * Last six months of income vs expense totals, current month last.
-     *
      * @return Collection<int, MonthlyCashFlowData>
      */
     #[Computed]
@@ -66,8 +64,6 @@ final class Dashboard extends Component
     }
 
     /**
-     * Series for the flux:chart component — amounts in reais, one row per month.
-     *
      * @return list<array{month: string, income: float, expense: float}>
      */
     #[Computed]

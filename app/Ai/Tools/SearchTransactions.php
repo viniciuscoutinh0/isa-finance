@@ -17,11 +17,6 @@ use Illuminate\Support\Str;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Read tool: search the user's transactions by account, category, type, date
- * range or description text. Account and category are matched by name; an
- * unmatched name is reported and its filter is dropped rather than failing.
- */
 final class SearchTransactions implements Tool
 {
     private const MAX_ROWS = 50;

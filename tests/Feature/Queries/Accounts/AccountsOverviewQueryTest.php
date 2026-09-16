@@ -24,7 +24,6 @@ it('derives the balance from initial balance plus income minus expense', functio
 
     $overview = app(AccountsOverviewQuery::class)->handle($this->user);
 
-    // 100 + 300 + 50 - 120 = 330
     expect($overview)->toHaveCount(1)
         ->and($overview->first()->balance->cents)->toBe(330_00)
         ->and($overview->first()->initialBalance->cents)->toBe(100_00);
@@ -69,10 +68,9 @@ it('combines transactions and transfers in one balance', function (): void {
 
     Transaction::factory()->forAccount($account)->forCategory($this->income)->amountCents(500_00)->create();
     Transaction::factory()->forAccount($account)->forCategory($this->expense)->amountCents(120_00)->create();
-    Transfer::factory()->between($account, $other)->amountCents(80_00)->create();  // out
-    Transfer::factory()->between($other, $account)->amountCents(30_00)->create();  // in
+    Transfer::factory()->between($account, $other)->amountCents(80_00)->create();
+    Transfer::factory()->between($other, $account)->amountCents(30_00)->create();
 
-    // 0 + 500 - 120 - 80 + 30 = 330
     expect(app(AccountsOverviewQuery::class)->handle($this->user)->keyBy('name')['Mix']->balance->cents)
         ->toBe(330_00);
 });

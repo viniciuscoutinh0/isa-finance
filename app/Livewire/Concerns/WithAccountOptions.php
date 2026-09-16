@@ -10,10 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 
-/**
- * Accounts the current user can pick from, for any component that renders an
- * account selector or filter.
- */
 trait WithAccountOptions
 {
     /**

@@ -58,9 +58,6 @@ final class Account extends Model
         return $this->hasMany(Transfer::class, 'to_account_id');
     }
 
-    /**
-     * Any transaction or transfer references this account.
-     */
     public function hasHistory(): bool
     {
         return $this->transactions()->exists()

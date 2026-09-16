@@ -50,9 +50,6 @@ final class Index extends Component
         return app(TransactionsQuery::class)->handle(Auth::user(), $this->filters);
     }
 
-    /**
-     * Drop the memoized list after a sibling component writes a transaction.
-     */
     #[On('transaction::changed')]
     public function refreshList(): void
     {

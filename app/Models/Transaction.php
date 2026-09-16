@@ -43,10 +43,6 @@ final class Transaction extends Model
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * A transaction has no type column: it is its category's type.
-     * Only call where `category` is loaded (strict mode forbids a lazy load).
-     */
     public function type(): CategoryType
     {
         return $this->category->type;

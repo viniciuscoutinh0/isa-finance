@@ -8,12 +8,6 @@ use App\Enums\AccountType;
 use App\Rules\MoneyString;
 use Illuminate\Validation\Rule;
 
-/**
- * Validation rules for an account payload.
- *
- * Keys are snake_case: they cross a boundary (wire payloads, validated arrays),
- * so they follow the wire naming, not PHP property style.
- */
 final class AccountRules
 {
     /**

@@ -45,9 +45,6 @@ final class Index extends Component
         return app(TransfersQuery::class)->handle(Auth::user(), $this->filters);
     }
 
-    /**
-     * Drop the memoized list after a sibling component writes a transfer.
-     */
     #[On('transfer::changed')]
     public function refreshList(): void
     {

@@ -27,7 +27,7 @@
         class="my-6"
     />
 
-    <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mb-4 grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
         <flux:input
             wire:model.live.debounce.500ms="filters.search"
             icon="magnifying-glass"
@@ -72,9 +72,9 @@
                 <flux:select.option :value="$category->id">
                     <div class="flex items-center gap-2">
                         <div @class([
-                            'rounded-full size-4',
-                            'bg-rose-500' => $category->type->color() === 'rose',
-                            'bg-green-500' => $category->type->color() === 'green',
+                            'size-2.5 shrink-0 rounded-full',
+                            'bg-expense' => $category->type === \App\Enums\CategoryType::Expense,
+                            'bg-income' => $category->type === \App\Enums\CategoryType::Income,
                         ])></div> {{ $category->name }}
                     </div>
                 </flux:select.option>
@@ -108,7 +108,79 @@
             </flux:callout.text>
         </flux:callout>
     @else
-        <flux:table :paginate="$this->transactions">
+        {{-- Mobile: card rows; the full table takes over from md up. --}}
+        <ul class="divide-y divide-zinc-200 md:hidden dark:divide-zinc-700">
+            @foreach ($this->transactions as $transaction)
+                @php($type = $transaction->category->type)
+                <li
+                    wire:key="transaction-card-{{ $transaction->id }}"
+                    class="flex items-start justify-between gap-3 py-3"
+                >
+                    <div class="min-w-0 flex-1">
+                        <flux:text class="truncate font-medium">
+                            {{ $transaction->description }}
+                        </flux:text>
+
+                        <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <flux:badge
+                                size="sm"
+                                :color="$type->color()"
+                            >
+                                {{ $transaction->category->name }}
+                            </flux:badge>
+
+                            <flux:text size="sm" class="truncate">
+                                {{ $transaction->date->translatedFormat('d/m/Y') }} · {{ $transaction->account->name }}
+                            </flux:text>
+                        </div>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-1">
+                        <flux:text
+                            @class([
+                                'font-medium tabular-nums',
+                                'text-income' => $type === \App\Enums\CategoryType::Income,
+                                'text-expense' => $type !== \App\Enums\CategoryType::Income,
+                            ])
+                        >
+                            {{ $type === \App\Enums\CategoryType::Income ? '+' : '−' }}{{ \App\Data\Money::fromCents($transaction->amount)->format() }}
+                        </flux:text>
+
+                        <flux:dropdown>
+                            <flux:button
+                                size="sm"
+                                variant="subtle"
+                                icon="ellipsis-vertical"
+                                aria-label="Ações do lançamento"
+                            />
+                            <flux:menu>
+                                <flux:menu.item
+                                    icon="pencil-square"
+                                    x-on:click="$dispatch('transaction::edit', { id: {{ $transaction->id }} })"
+                                >
+                                    Editar
+                                </flux:menu.item>
+
+                                <flux:menu.item
+                                    type="button"
+                                    icon="trash"
+                                    variant="danger"
+                                    wire:click="delete({{ $transaction->id }})"
+                                    wire:confirm="Tem certeza que quer excluir o lançamento &quot;{{ $transaction->description }}&quot;? Essa ação não pode ser desfeita."
+                                >
+                                    Excluir
+                                </flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+
+        <flux:table
+            :paginate="$this->transactions"
+            class="max-md:hidden"
+        >
             <flux:table.columns>
                 <flux:table.column>
                     Data
@@ -160,7 +232,7 @@
 
                         <flux:table.cell
                             align="end"
-                            class="whitespace-nowrap font-medium {{ $type === \App\Enums\CategoryType::Income ? 'text-green-600 dark:text-green-400' : 'text-rose-600 dark:text-rose-400' }}"
+                            class="whitespace-nowrap font-medium tabular-nums {{ $type === \App\Enums\CategoryType::Income ? 'text-income' : 'text-expense' }}"
                         >
                             {{ $type === \App\Enums\CategoryType::Income ? '+' : '−' }}{{ \App\Data\Money::fromCents($transaction->amount)->format() }}
                         </flux:table.cell>

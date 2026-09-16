@@ -1,5 +1,5 @@
 <flux:modal
-    class="md:w-96"
+    class="w-full md:w-96"
     name="account-update"
     flyout
     variant="floating"

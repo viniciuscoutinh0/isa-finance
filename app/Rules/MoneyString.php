@@ -9,9 +9,6 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use InvalidArgumentException;
 
-/**
- * Accepts a pt-BR money string the Money DTO can parse ("1.234,56", "99,90", "1000").
- */
 final class MoneyString implements ValidationRule
 {
     public function __construct(

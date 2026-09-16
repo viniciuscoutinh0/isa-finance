@@ -20,7 +20,7 @@ it('returns income and expense totals per month for the user, current month last
 
     Transaction::factory()->forAccount($account)->forCategory($income)->on('2026-09-05')->amountCents(300_00)->create();
     Transaction::factory()->forAccount($account)->forCategory($expense)->on('2026-09-09')->amountCents(120_00)->create();
-    Transaction::factory()->create(); // another user, another month
+    Transaction::factory()->create();
 
     $result = json_decode((new MonthlyCashFlow($user))->handle(new Request(['months' => 3])), true, flags: JSON_THROW_ON_ERROR);
 

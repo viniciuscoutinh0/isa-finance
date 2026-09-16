@@ -34,7 +34,72 @@
             <flux:callout.text>Quando você mover dinheiro entre contas, ela aparece aqui.</flux:callout.text>
         </flux:callout>
     @else
-        <flux:table :paginate="$this->transfers">
+        {{-- Mobile: card rows; the full table takes over from md up. --}}
+        <ul class="divide-y divide-zinc-200 md:hidden dark:divide-zinc-700">
+            @foreach ($this->transfers as $transfer)
+                <li
+                    wire:key="transfer-card-{{ $transfer->id }}"
+                    class="flex items-start justify-between gap-3 py-3"
+                >
+                    <div class="min-w-0 flex-1">
+                        <div class="flex min-w-0 items-center gap-1">
+                            <flux:text class="truncate font-medium">{{ $transfer->fromAccount->name }}</flux:text>
+                            <flux:icon
+                                icon="arrow-long-right"
+                                variant="micro"
+                                class="shrink-0 text-zinc-400"
+                            />
+                            <flux:text class="truncate font-medium">{{ $transfer->toAccount->name }}</flux:text>
+                        </div>
+
+                        <flux:text
+                            size="sm"
+                            class="mt-1 truncate"
+                        >
+                            {{ $transfer->date->translatedFormat('d/m/Y') }}@if (filled($transfer->notes)) · {{ $transfer->notes }} @endif
+                        </flux:text>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-1">
+                        <flux:text class="font-medium tabular-nums">
+                            {{ \App\Data\Money::fromCents($transfer->amount)->format() }}
+                        </flux:text>
+
+                        <flux:dropdown>
+                            <flux:button
+                                size="sm"
+                                variant="subtle"
+                                icon="ellipsis-vertical"
+                                aria-label="Ações da transferência"
+                            />
+                            <flux:menu>
+                                <flux:menu.item
+                                    icon="pencil-square"
+                                    x-on:click="$dispatch('transfer::edit', { id: {{ $transfer->id }} })"
+                                >
+                                    Editar
+                                </flux:menu.item>
+
+                                <flux:menu.item
+                                    type="button"
+                                    icon="trash"
+                                    variant="danger"
+                                    wire:click="delete({{ $transfer->id }})"
+                                    wire:confirm="Tem certeza que quer excluir a transferência de {{ $transfer->fromAccount->name }} para {{ $transfer->toAccount->name }}? Essa ação não pode ser desfeita."
+                                >
+                                    Excluir
+                                </flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+
+        <flux:table
+            :paginate="$this->transfers"
+            class="max-md:hidden"
+        >
             <flux:table.columns>
                 <flux:table.column>Data</flux:table.column>
                 <flux:table.column>De</flux:table.column>
@@ -56,7 +121,7 @@
                             </span>
                         </flux:table.cell>
                         <flux:table.cell class="text-zinc-500 dark:text-zinc-400">{{ $transfer->notes }}</flux:table.cell>
-                        <flux:table.cell align="end" class="whitespace-nowrap font-medium">
+                        <flux:table.cell align="end" class="whitespace-nowrap font-medium tabular-nums">
                             {{ \App\Data\Money::fromCents($transfer->amount)->format() }}
                         </flux:table.cell>
                         <flux:table.cell align="end">

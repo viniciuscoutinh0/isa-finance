@@ -10,9 +10,6 @@ use App\Models\Category;
 final readonly class DeleteCategory
 {
     /**
-     * Hard delete. A category that still has transactions is refused so the
-     * user reassigns or deletes them first.
-     *
      * @throws CategoryInUse
      */
     public function handle(Category $category): void

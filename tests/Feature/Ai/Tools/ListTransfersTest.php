@@ -14,7 +14,7 @@ it('returns only the user transfers with both account names and formatted amount
     $to = Account::factory()->ownedBy($user)->create(['name' => 'Carteira']);
 
     Transfer::factory()->between($from, $to)->on('2026-03-10')->amountCents(200_00)->create();
-    Transfer::factory()->create(); // another user
+    Transfer::factory()->create();
 
     $result = json_decode((new ListTransfers($user))->handle(new Request), true, flags: JSON_THROW_ON_ERROR);
 

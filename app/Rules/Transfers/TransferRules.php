@@ -8,13 +8,6 @@ use App\Models\User;
 use App\Rules\MoneyString;
 use Illuminate\Validation\Rule;
 
-/**
- * Validation rules for a transfer payload, shared by every boundary that
- * accepts one.
- *
- * Keys are snake_case: they cross a boundary (wire payloads, validated arrays),
- * so they follow the wire naming, not PHP property style.
- */
 final class TransferRules
 {
     /**
@@ -22,8 +15,6 @@ final class TransferRules
      */
     public static function for(User $user): array
     {
-        // Archived accounts stay eligible: paying off an archived credit card is
-        // a normal move, and a transfer never changes what the account is for.
         $ownAccount = Rule::exists('accounts', 'id')->where('user_id', $user->id);
 
         return [

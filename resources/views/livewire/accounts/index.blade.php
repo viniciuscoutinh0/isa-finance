@@ -13,7 +13,7 @@
         <flux:switch wire:model.live="filters.archived" label="Mostrar arquivadas" />
         <div class="sm:text-right">
             <flux:text size="sm">Saldo total (ativas)</flux:text>
-            <flux:heading @class(['text-rose-500 dark:text-rose-400' => $this->activeTotal->isNegative()])>
+            <flux:heading @class(['tabular-nums', 'text-expense' => $this->activeTotal->isNegative()])>
                 {{ $this->activeTotal->format() }}
             </flux:heading>
         </div>
@@ -30,15 +30,14 @@
             @endif
         </flux:callout>
     @else
-        {{-- Filtro por tipo — clique numa tag para filtrar os cards. --}}
         <div class="mb-4 flex flex-wrap items-center gap-2">
-            <flux:button size="sm" :variant="($filters['type'] === null || $filters['type'] === '') ? 'primary' : 'filled'"
+            <flux:button size="sm" class="shrink-0" :variant="($filters['type'] === null || $filters['type'] === '') ? 'primary' : 'filled'"
                 wire:click="$set('filters.type', null)">
                 Todas
             </flux:button>
 
             @foreach ($this->availableTypes as $type)
-                <flux:button size="sm" :icon="$type->icon()"
+                <flux:button size="sm" class="shrink-0" :icon="$type->icon()"
                     :variant="$filters['type'] === $type->value ? 'primary' : 'filled'"
                     wire:click="$set('filters.type', '{{ $type->value }}')">
                     {{ $type->label() }}
@@ -56,12 +55,12 @@
         @else
             <div class="grid gap-3 sm:grid-cols-2">
                 @foreach ($this->visibleAccounts as $account)
-                    <flux:card wire:key="account-{{ $account->id }}" class="flex flex-col gap-3">
+                    <flux:card wire:key="account-{{ $account->id }}" class="flex flex-col gap-3 max-sm:p-4">
                         <div class="flex items-start justify-between">
-                            <div class="flex items-center gap-2">
-                                <flux:icon :icon="$account->type->icon()" variant="mini" class="text-zinc-400" />
-                                <div>
-                                    <flux:heading>{{ $account->name }}</flux:heading>
+                            <div class="flex min-w-0 items-center gap-2">
+                                <flux:icon :icon="$account->type->icon()" variant="mini" class="shrink-0 text-zinc-400" />
+                                <div class="min-w-0">
+                                    <flux:heading class="truncate">{{ $account->name }}</flux:heading>
                                     <flux:text size="sm">{{ $account->type->label() }}</flux:text>
                                 </div>
                             </div>
@@ -69,10 +68,10 @@
                                 <flux:badge size="sm" color="zinc">Arquivada</flux:badge>
                             @endif
                         </div>
-    
+
                         <div>
                             <flux:text size="sm">Saldo atual</flux:text>
-                            <flux:heading size="lg" @class(['text-rose-500 dark:text-rose-400' => $account->balance->isNegative()])>
+                            <flux:heading size="lg" @class(['tabular-nums', 'text-expense' => $account->balance->isNegative()])>
                                 {{ $account->balance->format() }}
                             </flux:heading>
                             @if ($account->initialBalance->cents !== $account->balance->cents)

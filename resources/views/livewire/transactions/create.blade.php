@@ -1,5 +1,5 @@
 <flux:modal
-    class="md:w-md"
+    class="w-full md:w-md"
     name="transaction-create"
     flyout
     variant="floating"
@@ -27,9 +27,9 @@
                         <flux:select.option :value="$category->id">
                             <div class="flex items-center gap-2">
                                 <div @class([
-                                    'rounded-full size-4',
-                                    'bg-rose-500' => \App\Enums\CategoryType::from($type)->color() === 'rose',
-                                    'bg-green-500' => \App\Enums\CategoryType::from($type)->color() === 'green',
+                                    'size-2.5 shrink-0 rounded-full',
+                                    'bg-expense' => \App\Enums\CategoryType::from($type) === \App\Enums\CategoryType::Expense,
+                                    'bg-income' => \App\Enums\CategoryType::from($type) === \App\Enums\CategoryType::Income,
                                 ])></div> {{ $category->name }}
                             </div>
                         </flux:select.option>

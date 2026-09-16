@@ -21,11 +21,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-/**
- * Categories keeps a single component on purpose: there is no pagination, no
- * filter and no per-row component, so splitting it would add files without
- * removing state. See docs/adr/0006-crud-em-componentes-livewire.md.
- */
 #[Layout('layouts::dashboard')]
 #[Title('Categorias')]
 final class Index extends Component

@@ -128,8 +128,6 @@ it('submits the approval decision and resumes the reply once the form is confirm
         ->assertSet('awaitingReply', false)
         ->assertSee('Pronto, lançamento registrado.');
 
-    // The faked agent never runs the tool, so assert the arguments the approval
-    // form submits still match what CreateTransactionTool validates.
     expect((new CreateTransactionTool($this->user))->handle(new Request([
         'amount' => '150,00',
         'description' => 'Feira',

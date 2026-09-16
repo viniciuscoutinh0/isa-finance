@@ -29,12 +29,6 @@ use Laravel\Ai\Streaming\Events\ToolResult;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
-/**
- * The finance assistant chat panel. Present on every dashboard page via a
- * persisted Flux flyout. State + wiring only: it drives the {@see Assistant}
- * agent, streams the reply token by token with wire:stream, and turns a
- * write-tool approval pause into an on-screen confirmation form.
- */
 final class Chat extends Component
 {
     /** @var list<array{role: string, html: string}> */
@@ -44,7 +38,6 @@ final class Chat extends Component
 
     public string $draft = '';
 
-    /** Carries the just-sent prompt from send() to the follow-up runAgent() request. */
     public string $pendingPrompt = '';
 
     public bool $awaitingReply = false;
@@ -53,7 +46,6 @@ final class Chat extends Component
 
     public ?string $approvalCallId = null;
 
-    /** 'transaction' or 'transfer'. */
     public string $approvalKind = 'transaction';
 
     public string $approvalAmount = '';
@@ -383,10 +375,6 @@ final class Chat extends Component
         return nl2br(e($content));
     }
 
-    /**
-     * A pt-BR "the assistant is doing X" chip, streamed into the live reply while
-     * a tool runs. The `chat-pop` animation gives it a soft entrance each time.
-     */
     private function toolStatusHtml(string $tool): string
     {
         $label = match ($tool) {

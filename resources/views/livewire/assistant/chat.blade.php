@@ -3,7 +3,7 @@
         name="assistant"
         flyout
         :dismissible="!$awaitingReply && !$showApproval"
-        class="flex h-full flex-col md:w-[28rem]"
+        class="flex h-full w-full flex-col md:w-112"
         variant="floating"
     >
         <div>
@@ -16,7 +16,6 @@
             class="my-4"
         />
 
-        {{-- Transcript --}}
         @php($me = auth()->user())
         <div
             class="scroll-fade flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pe-1"
@@ -79,7 +78,6 @@
                 </flux:text>
             @endforelse
 
-            {{-- Live streamed reply --}}
             @if ($awaitingReply)
                 <div class="motion-safe:animate-chat-pop flex items-start gap-2">
                     <flux:avatar
@@ -108,7 +106,6 @@
             @endif
         </div>
 
-        {{-- Approval form: shown when a write tool is waiting for confirmation --}}
         @if ($showApproval)
             <flux:separator
                 variant="subtle"
@@ -206,7 +203,6 @@
             </form>
         @endif
 
-        {{-- Composer --}}
         <flux:separator
             variant="subtle"
             class="my-4"

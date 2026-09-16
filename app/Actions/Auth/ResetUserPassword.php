@@ -13,9 +13,6 @@ use Illuminate\Support\Str;
 final readonly class ResetUserPassword
 {
     /**
-     * Drive Laravel's password broker and persist the new password.
-     * Returns the broker status string (see Password::PASSWORD_RESET and friends).
-     *
      * @param  array{email: string, password: string, token: string}  $data
      */
     public function handle(array $data): string

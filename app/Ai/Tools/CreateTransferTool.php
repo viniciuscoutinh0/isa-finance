@@ -19,11 +19,6 @@ use Laravel\Ai\Contracts\Approvable;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-/**
- * Write tool: record a transfer between two of the user's own accounts. Always
- * approval-gated — both accounts are chosen on screen and arrive as
- * from_account_id / to_account_id in the (edited) approval arguments.
- */
 final class CreateTransferTool implements Approvable, Tool
 {
     use InteractsWithApprovals;
@@ -39,7 +34,6 @@ final class CreateTransferTool implements Approvable, Tool
 
     public function handle(Request $request): string
     {
-        // The schema lets the model omit the date; the shared rules require it.
         $request['date'] ??= CarbonImmutable::now()->toDateString();
 
         try {
